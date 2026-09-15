@@ -13,7 +13,6 @@ interface Props {
 
 export const SummaryView: React.FC<Props> = ({ sessionState, onPlayAgain, onBackToHome }) => {
   useEffect(() => {
-    // Fire festive celebratory confetti
     try {
       confetti({
         particleCount: 50,
@@ -36,69 +35,74 @@ export const SummaryView: React.FC<Props> = ({ sessionState, onPlayAgain, onBack
     .filter(Boolean);
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 space-y-6 text-center">
-      {/* Trophy & Badge */}
-      <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-terracotta-100 text-terracotta-600 mx-auto shadow-sm">
-        <Trophy className="w-10 h-10" />
-      </div>
-
-      <div>
-        <span className="text-xs font-bold text-teal-600 uppercase tracking-widest block mb-1">
-          Session Complete!
+    <div className="h-[100dvh] max-h-[100dvh] flex flex-col justify-between max-w-lg mx-auto w-full px-4 py-3 overflow-hidden select-none">
+      {/* Top Celebratory Header (Compact) */}
+      <div className="text-center shrink-0 pt-1">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-terracotta-100 text-terracotta-600 mx-auto shadow-sm mb-1.5 animate-pop">
+          <Trophy className="w-8 h-8" />
+        </div>
+        <span className="text-[11px] font-bold text-teal-600 uppercase tracking-widest block">
+          ¡Sesión Completada!
         </span>
-        <h2 className="text-2xl md:text-3xl font-serif text-ink-900 font-bold">
+        <h2 className="text-xl md:text-2xl font-serif text-ink-900 font-bold leading-tight">
           ¡Un ratito bien aprovechado!
         </h2>
-        <p className="text-sm text-ink-500 mt-1">
-          {correct} of {total} answers on point
+        <p className="text-xs text-ink-500 font-medium mt-0.5">
+          {correct} de {total} respuestas acertadas
         </p>
       </div>
 
-      {/* Decorative Neighborhood Stamp Unlocked */}
-      <div className="bg-mustard-50 border border-mustard-300 rounded-3xl p-4 flex items-center justify-center gap-3">
-        <div className="w-10 h-10 rounded-2xl bg-mustard-400 text-mustard-950 flex items-center justify-center font-bold">
-          <MapPin className="w-5 h-5" />
+      {/* Middle Scrollable Content (Stamp & Targets) */}
+      <div className="flex-1 min-h-0 overflow-y-auto space-y-2.5 my-2 pr-1">
+        {/* Neighborhood Stamp Unlocked */}
+        <div className="bg-mustard-50 border border-mustard-300 rounded-2xl p-2.5 flex items-center gap-2.5 shadow-sm">
+          <div className="w-9 h-9 rounded-xl bg-mustard-400 text-mustard-950 flex items-center justify-center font-bold shrink-0">
+            <MapPin className="w-4 h-4" />
+          </div>
+          <div className="text-left flex-1 min-w-0">
+            <h4 className="font-bold text-xs uppercase tracking-wider text-mustard-900 leading-tight">
+              Sello del Barrio Desbloqueado
+            </h4>
+            <p className="text-[11px] text-mustard-800 truncate">
+              Tu mapa de Madrid ha recibido una nueva estampa de visita.
+            </p>
+          </div>
         </div>
-        <div className="text-left">
-          <h4 className="font-bold text-xs uppercase tracking-wider text-mustard-900">
-            Neighborhood Stamp Earned
-          </h4>
-          <p className="text-xs text-mustard-800">
-            Your pocket town has been decorated with a new visit stamp!
-          </p>
-        </div>
-      </div>
 
-      {/* Targets Practiced List */}
-      <div className="bg-white rounded-3xl p-5 border border-cream-300 shadow-sm text-left">
-        <h3 className="text-xs font-bold text-ink-400 uppercase tracking-wider mb-3">
-          Language Patterns Practised
-        </h3>
-        <div className="space-y-2.5">
-          {practicedTargets.map(target => (
-            <div key={target!.id} className="flex items-center justify-between p-2 rounded-xl bg-cream-50 border border-cream-200">
-              <div>
-                <p className="text-sm font-bold text-ink-900">{target!.spanish}</p>
-                <p className="text-xs text-ink-500">{target!.english}</p>
+        {/* Practiced Targets */}
+        <div className="bg-white rounded-2xl p-3 border border-cream-300 shadow-sm text-left">
+          <h3 className="text-[10px] font-bold text-ink-400 uppercase tracking-wider mb-2">
+            Patrones practicados en este ratito
+          </h3>
+          <div className="space-y-1.5">
+            {practicedTargets.map(target => (
+              <div
+                key={target!.id}
+                className="flex items-center justify-between p-2 rounded-xl bg-cream-50 border border-cream-200"
+              >
+                <div className="min-w-0 flex-1 pr-2">
+                  <p className="text-xs font-bold text-ink-900 truncate">{target!.spanish}</p>
+                  <p className="text-[10px] text-ink-500 truncate">{target!.english}</p>
+                </div>
+                <CheckCircle2 className="w-3.5 h-3.5 text-teal-600 shrink-0" />
               </div>
-              <CheckCircle2 className="w-4 h-4 text-teal-600 shrink-0" />
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Navigation Actions */}
-      <div className="space-y-3 pt-2 safe-bottom">
+      {/* Permanently Anchored Action Buttons (GUARANTEED visible without scrolling) */}
+      <div className="shrink-0 space-y-2 pt-2 border-t border-cream-200 safe-bottom">
         <button
           type="button"
           onClick={() => {
             audioService.playTap();
             onPlayAgain();
           }}
-          className="w-full h-14 rounded-2xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold text-base shadow-md active:scale-98 transition-all flex items-center justify-center gap-2"
+          className="w-full h-12 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 active:scale-98 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2"
         >
-          <RotateCcw className="w-5 h-5" />
-          Play Another Minute
+          <RotateCcw className="w-4 h-4" />
+          <span>Jugar otro ratito (Play Another Minute)</span>
         </button>
 
         <button
@@ -107,10 +111,10 @@ export const SummaryView: React.FC<Props> = ({ sessionState, onPlayAgain, onBack
             audioService.playTap();
             onBackToHome();
           }}
-          className="w-full h-12 rounded-2xl bg-cream-200 hover:bg-cream-300 text-ink-800 font-bold text-sm transition-colors flex items-center justify-center gap-2"
+          className="w-full h-10 rounded-xl bg-cream-200 hover:bg-cream-300 active:scale-98 text-ink-800 font-bold text-xs transition-colors flex items-center justify-center gap-1.5"
         >
-          <span>Back to Arcade</span>
-          <ArrowRight className="w-4 h-4" />
+          <span>Volver al Arcade (Back to Arcade)</span>
+          <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>

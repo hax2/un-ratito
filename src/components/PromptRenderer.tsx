@@ -4,7 +4,7 @@ import { PhraseBuilderGame } from '../games/builder/PhraseBuilderGame';
 import { TinyTalesGame } from '../games/tales/TinyTalesGame';
 import { PocketMarketGame } from '../games/market/PocketMarketGame';
 import { CafePleaseGame } from '../games/cafe/CafePleaseGame';
-import { SpotTheSlipGame } from '../games/slip/SpotTheSlipGame';
+import { TapeoFrenzyGame } from '../games/tapeo/TapeoFrenzyGame';
 import { WhatDidTheyMeanGame } from '../games/listening/WhatDidTheyMeanGame';
 
 interface Props {
@@ -24,8 +24,8 @@ export const PromptRenderer: React.FC<Props> = ({ prompt, learnerLevel = 'beginn
       return <PocketMarketGame prompt={prompt} learnerLevel={learnerLevel} onAnswer={onAnswer} disabled={disabled} />;
     case 'cafe':
       return <CafePleaseGame prompt={prompt} learnerLevel={learnerLevel} onAnswer={onAnswer} disabled={disabled} />;
-    case 'slip':
-      return <SpotTheSlipGame prompt={prompt} learnerLevel={learnerLevel} onAnswer={onAnswer} disabled={disabled} />;
+    case 'tapeo':
+      return <TapeoFrenzyGame prompt={prompt} learnerLevel={learnerLevel} onAnswer={onAnswer} disabled={disabled} />;
     case 'listening':
       return <WhatDidTheyMeanGame prompt={prompt} learnerLevel={learnerLevel} onAnswer={onAnswer} disabled={disabled} />;
     default:

@@ -192,14 +192,19 @@ describe('Game Evaluators', () => {
     expect(isWrongMatch).toBe(false);
   });
 
-  it('Spot the Slip verifies token index and correction', () => {
-    const errorTokenIndex = 2;
-    const correctCorrection = 'cocinando';
+  it('Tapeo Frenzy correctly verifies matching tapas items regardless of order', () => {
+    const required = ['bravas', 'cana'];
+    const tray = ['cana', 'bravas'];
 
-    const userSelectedToken = 2;
-    const userChosenCorrection = 'cocinando';
+    const reqSorted = [...required].sort();
+    const traySorted = [...tray].sort();
+    const isMatch = reqSorted.length === traySorted.length && reqSorted.every((val, idx) => val === traySorted[idx]);
+    expect(isMatch).toBe(true);
 
-    expect(userSelectedToken === errorTokenIndex && userChosenCorrection === correctCorrection).toBe(true);
+    const wrongTray = ['cana', 'tortilla'];
+    const wrongSorted = [...wrongTray].sort();
+    const isWrongMatch = reqSorted.length === wrongSorted.length && reqSorted.every((val, idx) => val === wrongSorted[idx]);
+    expect(isWrongMatch).toBe(false);
   });
 });
 

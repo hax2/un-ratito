@@ -9,7 +9,7 @@ export type GameId =
   | 'tales'
   | 'market'
   | 'cafe'
-  | 'slip'
+  | 'tapeo'
   | 'listening';
 
 export type SupportLevel = 'supported' | 'standard' | 'stretch';
@@ -58,7 +58,7 @@ export interface BasePrompt {
   explanationEs?: string;
 }
 
-// 1. Phrase Builder Prompt
+// 1. Metro Sprint / Phrase Builder Prompt
 export interface BuilderTile {
   id: string;
   text: string;
@@ -68,13 +68,15 @@ export interface BuilderPrompt extends BasePrompt {
   game: 'builder';
   intent: string;
   intentEs?: string;
+  situationalContext?: string; // e.g. "Situación en la barra: Pides un cortado con hielo"
+  interlocutorQuestion?: string; // e.g. "Camarero: «¿Qué te pongo, salao?»"
   tiles: BuilderTile[];
   acceptedSequences: string[][]; // tile ID sequences
   validOffTargetSequences?: { sequence: string[]; feedback: string }[];
   canonicalDisplay: string;
 }
 
-// 2. Tiny Tales Prompt
+// 2. Aventuras en Madrid / Tiny Tales Prompt
 export interface TaleChoice {
   id: string;
   text: string;
@@ -100,24 +102,26 @@ export interface TalesPrompt extends BasePrompt {
   turns: TaleTurn[];
 }
 
-// 3. Pocket Market Prompt
+// 3. Mercado Rush Prompt
 export interface MarketItem {
   id: string;
   spanish: string;
   english: string;
   gender: 'el' | 'la' | 'los' | 'las';
-  icon: string; // SVG icon identifier
+  icon: string;
+  weightGrams?: number;
 }
 
 export interface MarketPrompt extends BasePrompt {
   game: 'market';
-  instruction: string; // e.g., "Add the apple to the bag" or "Añade la manzana"
+  instruction: string;
   instructionEs?: string;
+  vendorDialogue?: string;
   correctItemId: string;
   choices: MarketItem[];
 }
 
-// 4. Café, Please Prompt
+// 4. Barista de Barrio Prompt
 export interface CafeSlot {
   drink: string;
   milk?: 'solo' | 'con leche' | 'cortado' | 'con hielo';
@@ -132,20 +136,25 @@ export interface CafePrompt extends BasePrompt {
   customerName: string;
 }
 
-// 5. Spot the Slip Prompt
-export interface SlipPrompt extends BasePrompt {
-  game: 'slip';
-  sentence: string;
-  tokens: string[];
-  hasError: boolean;
-  errorTokenIndex: number; // -1 if hasError is false
-  correctionChoices: string[]; // options to replace the wrong token, or ["Correct as is"]
-  correctCorrection: string;
-  correctedSentence: string;
-  instructionEs?: string;
+// 5. Tapeo Frenzy Prompt
+export interface TapeoItem {
+  id: string;
+  nameEs: string;
+  nameEn: string;
+  icon: string;
+  category: 'tapa' | 'bebida';
 }
 
-// 6. What Did They Mean? Prompt
+export interface TapeoPrompt extends BasePrompt {
+  game: 'tapeo';
+  patronName: string;
+  orderSpokenSpanish: string; // e.g., "¡Marchando unas bravas y una caña!"
+  orderEnglish?: string;
+  requiredItemIds: string[];
+  availableItems: TapeoItem[];
+}
+
+// 6. Radio Retiro Prompt
 export interface ListeningPrompt extends BasePrompt {
   game: 'listening';
   clipSpanish: string;
@@ -155,6 +164,7 @@ export interface ListeningPrompt extends BasePrompt {
   choices: {
     id: string;
     text: string;
+    textEs?: string;
     isCorrect: boolean;
   }[];
   revealedTranscript?: boolean;
@@ -165,7 +175,7 @@ export type AnyPrompt =
   | TalesPrompt
   | MarketPrompt
   | CafePrompt
-  | SlipPrompt
+  | TapeoPrompt
   | ListeningPrompt;
 
 export interface AttemptRecord {

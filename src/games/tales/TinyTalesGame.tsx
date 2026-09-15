@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { TaleChoice, TalesPrompt, LearnerLevel } from '../../content/types';
 import { audioService } from '../../audio/audioService';
-import { BookOpen, Volume2, ArrowRight } from 'lucide-react';
-import { UI_TEXT } from '../../utils/language';
+import { Volume2, ArrowRight, Compass } from 'lucide-react';
 
 interface Props {
   prompt: TalesPrompt;
@@ -11,7 +10,12 @@ interface Props {
   disabled?: boolean;
 }
 
-export const TinyTalesGame: React.FC<Props> = ({ prompt, learnerLevel = 'beginner', onAnswer, disabled }) => {
+export const TinyTalesGame: React.FC<Props> = ({
+  prompt,
+  learnerLevel = 'beginner',
+  onAnswer,
+  disabled,
+}) => {
   const [currentTurnIndex, setCurrentTurnIndex] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState<TaleChoice | null>(null);
   const [history, setHistory] = useState<{ speaker: string; text: string; userReply: string; consequence: string }[]>([]);
@@ -47,7 +51,6 @@ export const TinyTalesGame: React.FC<Props> = ({ prompt, learnerLevel = 'beginne
     setHistory(newHistory);
 
     if (isLastTurn) {
-      // Scene completed! Check if any choice was wrong
       const hadMistakes = !selectedChoice.isCorrect;
       onAnswer(hadMistakes ? 'incorrect' : 'correct', { history: newHistory });
     } else {
@@ -57,42 +60,49 @@ export const TinyTalesGame: React.FC<Props> = ({ prompt, learnerLevel = 'beginne
   };
 
   return (
-    <div className="flex flex-col h-full justify-between max-w-lg mx-auto w-full px-4 py-2">
-      {/* Header */}
-      <div className="text-center mb-3">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-olive-100 text-olive-600 text-xs font-semibold uppercase mb-1">
-          <BookOpen className="w-3.5 h-3.5" />
-          Tiny Tales • {prompt.title}
+    <div className="flex flex-col h-full justify-between max-w-lg mx-auto w-full px-3 py-1 select-none overflow-hidden">
+      {/* Header Banner */}
+      <div className="text-center mb-1">
+        <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-xs font-bold uppercase tracking-wider mb-1">
+          <Compass className="w-3.5 h-3.5 text-emerald-600" />
+          {learnerLevel === 'advanced'
+            ? `Aventuras en Madrid • ${prompt.title}`
+            : `Aventuras en Madrid — ${prompt.title}`}
         </div>
-        <p className="text-xs text-ink-500 italic">{prompt.setting}</p>
+        <p className="text-[11px] text-ink-500 italic truncate">{prompt.setting}</p>
       </div>
 
-      {/* Narrative Dialogue Area */}
-      <div className="flex-1 flex flex-col justify-center space-y-4 overflow-y-auto mb-4 max-h-[46vh]">
-        {/* Previous dialogue summary if multi-turn */}
+      {/* Narrative Dialogue Container */}
+      <div className="flex-1 flex flex-col justify-center space-y-2 overflow-y-auto mb-2 min-h-0">
+        {/* Past dialogue history (compact) */}
         {history.map((hist, i) => (
-          <div key={i} className="text-xs opacity-60 border-l-2 border-cream-300 pl-3 py-1 space-y-1">
+          <div key={i} className="text-[11px] opacity-75 border-l-2 border-emerald-300 pl-2 py-0.5 space-y-0.5">
             <p className="font-semibold text-ink-800">{hist.speaker}: «{hist.text}»</p>
-            <p className="text-teal-600 font-medium">Tú: «{hist.userReply}»</p>
+            <p className="text-emerald-700 font-medium">Tú: «{hist.userReply}»</p>
           </div>
         ))}
 
         {/* Current Speaker Bubble */}
-        <div className="bg-white rounded-2xl p-4 border border-cream-200 shadow-sm relative">
+        <div className="bg-white rounded-2xl p-3 border-2 border-emerald-200 shadow-sm relative">
           <div className="flex items-start justify-between gap-2">
-            <div>
-              <span className="text-xs font-bold text-terracotta-600 uppercase tracking-wider">
-                {turn.speaker}
+            <div className="flex items-start gap-2">
+              <span className="text-2xl" role="img" aria-label="speaker">
+                {turn.speakerRole === 'server' ? '🧑‍🍳' : '🙋'}
               </span>
-              <p className="text-lg md:text-xl font-medium text-ink-900 mt-1">
-                «{turn.text}»
-              </p>
+              <div>
+                <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wide block">
+                  {turn.speaker}
+                </span>
+                <p className="text-sm md:text-base font-bold text-ink-900 leading-snug">
+                  «{turn.text}»
+                </p>
+              </div>
             </div>
             <button
               type="button"
               onClick={() => audioService.speakSpanish(turn.text)}
-              className="p-2 rounded-xl bg-cream-100 text-ink-700 hover:bg-cream-200 transition-colors"
-              aria-label="Listen to speaker"
+              className="p-2 rounded-xl bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition-colors shrink-0"
+              aria-label="Escuchar diálogo"
             >
               <Volume2 className="w-4 h-4" />
             </button>
@@ -100,42 +110,44 @@ export const TinyTalesGame: React.FC<Props> = ({ prompt, learnerLevel = 'beginne
         </div>
 
         {/* Goal Indicator */}
-        <div className="text-center bg-cream-100 py-1.5 px-3 rounded-lg border border-cream-200">
+        <div className="text-center bg-emerald-50/70 py-1 px-2.5 rounded-lg border border-emerald-200">
           <span className="text-xs text-ink-700 font-medium">
-            {UI_TEXT.yourGoal[learnerLevel]}{' '}
+            {learnerLevel === 'beginner' ? 'Goal:' : 'Tu respuesta:'}{' '}
             <strong className="text-ink-900">
               {learnerLevel === 'beginner' ? turn.goal : (turn.goalEs || turn.goal)}
             </strong>
           </span>
         </div>
 
-        {/* Consequence / Feedback Banner */}
+        {/* Consequence Feedback */}
         {selectedChoice && (
-          <div className={`p-3.5 rounded-xl border text-sm animate-fade-in ${
-            selectedChoice.isCorrect
-              ? 'bg-teal-50 border-teal-200 text-teal-800'
-              : 'bg-terracotta-50 border-terracotta-200 text-terracotta-800'
-          }`}>
-            <p className="font-semibold">{selectedChoice.feedback}</p>
-            <p className="text-xs mt-1 text-ink-700 italic">{selectedChoice.consequence}</p>
+          <div
+            className={`p-2.5 rounded-xl border text-xs animate-fade-in ${
+              selectedChoice.isCorrect
+                ? 'bg-teal-50 border-teal-300 text-teal-900'
+                : 'bg-terracotta-50 border-terracotta-300 text-terracotta-900'
+            }`}
+          >
+            <p className="font-bold">{selectedChoice.feedback}</p>
+            <p className="text-[11px] mt-0.5 italic">{selectedChoice.consequence}</p>
           </div>
         )}
       </div>
 
-      {/* Response Choices */}
-      <div className="safe-bottom space-y-2 pt-2">
+      {/* Response Choices / Continue */}
+      <div className="pt-1 safe-bottom">
         {!selectedChoice ? (
-          <div className="space-y-2.5">
+          <div className="space-y-1.5">
             {turn.choices.map(choice => (
               <button
                 key={choice.id}
                 type="button"
                 onClick={() => handleSelectChoice(choice)}
                 disabled={disabled}
-                className="w-full min-h-[52px] px-4 py-3 text-left rounded-2xl notebook-card-interactive bg-white border border-cream-300 font-medium text-ink-900 hover:border-teal-500 active:scale-98 transition-all flex items-center justify-between"
+                className="w-full p-2.5 text-left rounded-xl bg-white border border-cream-300 hover:border-emerald-500 active:scale-98 transition-all flex items-center justify-between shadow-sm text-xs md:text-sm font-medium"
               >
                 <span>{choice.text}</span>
-                <ArrowRight className="w-4 h-4 text-ink-400 shrink-0 ml-2" />
+                <ArrowRight className="w-3.5 h-3.5 text-ink-400 shrink-0 ml-2" />
               </button>
             ))}
           </div>
@@ -143,14 +155,14 @@ export const TinyTalesGame: React.FC<Props> = ({ prompt, learnerLevel = 'beginne
           <button
             type="button"
             onClick={handleContinue}
-            className="w-full h-14 rounded-2xl bg-teal-500 hover:bg-teal-600 text-white font-bold text-lg shadow-md active:scale-98 transition-all flex items-center justify-center gap-2"
+            className="w-full h-12 rounded-xl bg-teal-600 hover:bg-teal-700 active:scale-98 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2"
           >
             <span>
               {isLastTurn
-                ? (learnerLevel === 'beginner' ? 'Finish Scene' : 'Finalizar escena')
-                : (learnerLevel === 'beginner' ? 'Next Turn' : 'Siguiente turno')}
+                ? (learnerLevel === 'beginner' ? 'Finish Adventure' : 'Completar Aventura')
+                : (learnerLevel === 'beginner' ? 'Continue Scene' : 'Continuar')}
             </span>
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="w-4 h-4" />
           </button>
         )}
       </div>

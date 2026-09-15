@@ -7,10 +7,10 @@ import {
   RotateCcw,
   ShoppingBag,
   Coffee,
-  Sparkles,
-  AlertTriangle,
+  Flame,
+  TrainTrack,
   BookOpen,
-  Headphones,
+  Radio,
   Compass,
   MapPin,
   ChevronRight,
@@ -56,63 +56,63 @@ export const HomeView: React.FC<Props> = ({
   }[] = [
     {
       id: 'market',
-      title: learnerLevel === 'advanced' ? 'Mercado de bolsillo' : 'Pocket Market',
+      title: learnerLevel === 'advanced' ? 'Mercado Rush' : 'Mercado Rush — Market Stall',
       description: learnerLevel === 'advanced'
-        ? 'Añade artículos cotidianos con su género (el/la)'
-        : 'Fill the bag with everyday items & noun genders',
+        ? 'Pesa y embolsa productos con su género (el/la)'
+        : 'Weigh & bag market items with authentic vendor banter',
       icon: <ShoppingBag className="w-5 h-5 text-mustard-600" />,
       badge: learnerLevel === 'advanced' ? 'A1–A2' : 'Beginner',
       bg: 'bg-mustard-100/60',
     },
     {
       id: 'cafe',
-      title: learnerLevel === 'advanced' ? 'Café, por favor' : 'Café, Please',
+      title: learnerLevel === 'advanced' ? 'Barista de Barrio' : 'Barista de Barrio — Bar Counter',
       description: learnerLevel === 'advanced'
-        ? 'Prepara pedidos, tipos de leche y cantidades'
-        : 'Assemble café orders, milk modifiers & numbers',
+        ? 'Prepara cafés, tipos de leche y desliza la taza en barra'
+        : 'Prepare Madrid coffees & slide the cup down the bar',
       icon: <Coffee className="w-5 h-5 text-terracotta-600" />,
       badge: learnerLevel === 'advanced' ? 'Diario' : 'Everyday',
       bg: 'bg-terracotta-100/60',
     },
     {
-      id: 'builder',
-      title: learnerLevel === 'advanced' ? 'Constructor de frases' : 'Phrase Builder',
+      id: 'tapeo',
+      title: learnerLevel === 'advanced' ? 'Tapeo Frenzy' : 'Tapeo Frenzy — Tapas Rush',
       description: learnerLevel === 'advanced'
-        ? 'Forma oraciones con fichas y combinaciones'
-        : 'Tap word tiles into natural Spanish sentences',
-      icon: <Sparkles className="w-5 h-5 text-teal-600" />,
-      badge: 'Core',
-      bg: 'bg-teal-100/60',
+        ? 'Despacha raciones de bravas, tortilla y cañas al vuelo'
+        : 'Dispatch tapas plates & draught beers matching shouted orders',
+      icon: <Flame className="w-5 h-5 text-amber-600" />,
+      badge: 'Arcade',
+      bg: 'bg-amber-100/60',
     },
     {
-      id: 'slip',
-      title: learnerLevel === 'advanced' ? 'Caza el error' : 'Spot the Slip',
+      id: 'builder',
+      title: learnerLevel === 'advanced' ? 'Metro Sprint' : 'Metro Sprint — Sentence Rail',
       description: learnerLevel === 'advanced'
-        ? 'Detecta y corrige fallos de concordancia y modo'
-        : 'Inspect signs, find grammar errors & repair them',
-      icon: <AlertTriangle className="w-5 h-5 text-terracotta-600" />,
-      badge: 'Grammar',
-      bg: 'bg-terracotta-100/60',
+        ? 'Conecta respuestas naturales ante situaciones cotidianas'
+        : 'Snap word tiles onto Madrid metro rails to respond in context',
+      icon: <TrainTrack className="w-5 h-5 text-blue-600" />,
+      badge: 'Flow',
+      bg: 'bg-blue-100/60',
     },
     {
       id: 'tales',
-      title: learnerLevel === 'advanced' ? 'Microhistorias' : 'Tiny Tales',
+      title: learnerLevel === 'advanced' ? 'Aventuras en Madrid' : 'Aventuras en Madrid — Stories',
       description: learnerLevel === 'advanced'
-        ? 'Diálogos interactivos con decisiones naturales'
-        : 'Short multi-turn conversations & choices',
-      icon: <BookOpen className="w-5 h-5 text-olive-600" />,
+        ? 'Decisiones interactivas con personajes de Malasaña y Retiro'
+        : 'Short branching dialogues with Madrid locals',
+      icon: <BookOpen className="w-5 h-5 text-emerald-600" />,
       badge: 'Stories',
-      bg: 'bg-olive-100/60',
+      bg: 'bg-emerald-100/60',
     },
     {
       id: 'listening',
-      title: learnerLevel === 'advanced' ? '¿Qué querían decir?' : 'What Did They Mean?',
+      title: learnerLevel === 'advanced' ? 'Radio Retiro' : 'Radio Retiro — Listening FM',
       description: learnerLevel === 'advanced'
-        ? 'Escucha clips y deduce la intención o matiz'
-        : 'Listen to clips, solve meaning & implication',
-      icon: <Headphones className="w-5 h-5 text-teal-600" />,
+        ? 'Sintoniza pistas de audio y deduce dobles sentidos e ironía'
+        : 'Tune into authentic street audio clips & solve implications',
+      icon: <Radio className="w-5 h-5 text-indigo-600" />,
       badge: 'Audio',
-      bg: 'bg-teal-100/60',
+      bg: 'bg-indigo-100/60',
     },
   ];
 

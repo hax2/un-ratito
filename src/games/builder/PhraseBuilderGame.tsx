@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BuilderPrompt, BuilderTile, LearnerLevel } from '../../content/types';
 import { audioService } from '../../audio/audioService';
-import { Volume2, RotateCcw, Check, Sparkles } from 'lucide-react';
-import { UI_TEXT } from '../../utils/language';
+import { Volume2, RotateCcw, Check, TrainTrack } from 'lucide-react';
 
 interface Props {
   prompt: BuilderPrompt;
@@ -11,16 +10,19 @@ interface Props {
   disabled?: boolean;
 }
 
-export const PhraseBuilderGame: React.FC<Props> = ({ prompt, learnerLevel = 'beginner', onAnswer, disabled }) => {
+export const PhraseBuilderGame: React.FC<Props> = ({
+  prompt,
+  learnerLevel = 'beginner',
+  onAnswer,
+  disabled,
+}) => {
   const [selectedTileIds, setSelectedTileIds] = useState<string[]>([]);
   const [typedMode, setTypedMode] = useState(false);
   const [typedText, setTypedText] = useState('');
-  const [feedbackNote, setFeedbackNote] = useState<string | null>(null);
 
   useEffect(() => {
     setSelectedTileIds([]);
     setTypedText('');
-    setFeedbackNote(null);
   }, [prompt.id]);
 
   const tileMap = new Map<string, BuilderTile>(prompt.tiles.map(t => [t.id, t]));
@@ -45,7 +47,6 @@ export const PhraseBuilderGame: React.FC<Props> = ({ prompt, learnerLevel = 'beg
     if (disabled) return;
 
     if (typedMode) {
-      // Clean and normalize strings for typed mode
       const cleanTyped = typedText.trim().toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()¿¡]/g, '');
       const cleanCanonical = prompt.canonicalDisplay.trim().toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()¿¡]/g, '');
       if (cleanTyped === cleanCanonical) {
@@ -61,7 +62,6 @@ export const PhraseBuilderGame: React.FC<Props> = ({ prompt, learnerLevel = 'beg
 
     if (selectedTileIds.length === 0) return;
 
-    // Compare selectedTileIds to accepted sequences
     const isAccepted = prompt.acceptedSequences.some(seq => {
       if (seq.length !== selectedTileIds.length) return false;
       return seq.every((id, idx) => id === selectedTileIds[idx]);
@@ -74,7 +74,6 @@ export const PhraseBuilderGame: React.FC<Props> = ({ prompt, learnerLevel = 'beg
       return;
     }
 
-    // Check valid off-target
     if (prompt.validOffTargetSequences) {
       const offTarget = prompt.validOffTargetSequences.find(ot => {
         if (ot.sequence.length !== selectedTileIds.length) return false;
@@ -82,82 +81,126 @@ export const PhraseBuilderGame: React.FC<Props> = ({ prompt, learnerLevel = 'beg
       });
       if (offTarget) {
         audioService.playTap();
-        setFeedbackNote(offTarget.feedback);
         onAnswer('valid-off-target', { selectedTileIds });
         return;
       }
     }
 
-    // Otherwise incorrect
     audioService.playErrorSound();
     onAnswer('incorrect', { selectedTileIds });
   };
 
-  const constructedSentence = selectedTileIds
-    .map(id => tileMap.get(id)?.text || '')
-    .join(' ');
+  // Determine prompt display: NEVER ask to translate Spanish to Spanish!
+  const isBeginner = learnerLevel === 'beginner';
+  const promptHeader = isBeginner
+    ? prompt.intent
+    : prompt.interlocutorQuestion || prompt.situationalContext || prompt.intentEs || prompt.intent;
+
+  const promptSubtext = !isBeginner && prompt.interlocutorQuestion && prompt.situationalContext
+    ? prompt.situationalContext
+    : isBeginner
+    ? null
+    : null;
 
   return (
-    <div className="flex flex-col h-full justify-between max-w-lg mx-auto w-full px-4 py-2">
-      {/* Intent & Goal header */}
-      <div className="text-center mb-4">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cream-200 text-ink-700 text-xs font-semibold tracking-wide uppercase mb-2">
-          <Sparkles className="w-3.5 h-3.5 text-terracotta-500" />
-          {learnerLevel === 'advanced' ? 'Constructor de frases' : 'Phrase Builder'}
+    <div className="flex flex-col h-full justify-between max-w-lg mx-auto w-full px-3 py-1 select-none overflow-hidden">
+      {/* Header Banner */}
+      <div className="text-center mb-1">
+        <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-100 text-blue-900 text-xs font-bold uppercase tracking-wider mb-1">
+          <TrainTrack className="w-3.5 h-3.5 text-blue-600" />
+          {learnerLevel === 'advanced' ? 'Metro Sprint — Vía Rápida' : 'Metro Sprint — Sentence Rail'}
         </div>
-        <h2 className="text-xl md:text-2xl font-serif text-ink-900 font-bold leading-tight">
-          {learnerLevel === 'beginner' ? prompt.intent : (prompt.intentEs || prompt.intent)}
-        </h2>
-        {learnerLevel === 'intermediate' && prompt.intentEs && (
-          <p className="text-xs text-ink-400 mt-1 italic">
-            ({prompt.intent})
-          </p>
-        )}
       </div>
 
-      {/* Target construction sentence area */}
-      <div className="min-h-[96px] bg-white rounded-2xl border-2 border-dashed border-cream-300 p-3.5 mb-4 flex flex-wrap items-center justify-center gap-2 shadow-inner">
-        {typedMode ? (
-          <input
-            type="text"
-            value={typedText}
-            onChange={e => setTypedText(e.target.value)}
-            placeholder={learnerLevel === 'beginner' ? "Type Spanish sentence here..." : "Escribe la frase en español aquí..."}
-            disabled={disabled}
-            className="w-full text-center text-lg font-medium p-2 border-b-2 border-teal-500 focus:outline-none bg-transparent"
-          />
-        ) : selectedTileIds.length === 0 ? (
-          <span className="text-ink-400 text-sm italic select-none">
-            {learnerLevel === 'beginner' ? "Tap tiles below to build the sentence" : "Toca las fichas inferiores para formar la frase"}
+      {/* Situational Interlocutor / Context Prompt */}
+      <div className="bg-white rounded-2xl p-3 border-2 border-blue-200 shadow-sm relative mb-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="text-left">
+            <span className="text-[11px] font-bold text-blue-800 uppercase tracking-wide block mb-0.5">
+              {isBeginner ? 'Your Goal' : 'Interlocutor / Situación'}
+            </span>
+            <p className="text-sm md:text-base font-bold text-ink-900 leading-snug">
+              {promptHeader}
+            </p>
+            {promptSubtext && (
+              <p className="text-xs text-ink-500 mt-1 italic">
+                {promptSubtext}
+              </p>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              if (prompt.interlocutorQuestion) {
+                audioService.speakSpanish(prompt.interlocutorQuestion.replace(/«|»/g, ''));
+              } else {
+                audioService.speakSpanish(prompt.canonicalDisplay);
+              }
+            }}
+            className="p-2 rounded-xl bg-blue-50 text-blue-800 hover:bg-blue-100 transition-colors shrink-0"
+            aria-label="Escuchar pista"
+          >
+            <Volume2 className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Metro Rail Sentence Construction Track */}
+      <div className="bg-slate-900 rounded-2xl p-3 border-4 border-slate-800 shadow-inner flex flex-col justify-between min-h-[90px] mb-2">
+        <div className="flex items-center justify-between text-[11px] font-bold text-blue-300 uppercase tracking-wider mb-1">
+          <span className="flex items-center gap-1">
+            <TrainTrack className="w-3 h-3 text-blue-400" />
+            Vía Metro Madrid
           </span>
-        ) : (
-          selectedTileIds.map(id => {
-            const tile = tileMap.get(id);
-            if (!tile) return null;
-            return (
-              <button
-                key={id}
-                type="button"
-                onClick={() => handleTileClick(id)}
-                disabled={disabled}
-                className="px-3.5 py-2 rounded-xl bg-terracotta-500 text-white font-medium text-base shadow-sm active:scale-95 transition-transform"
-              >
-                {tile.text}
-              </button>
-            );
-          })
-        )}
-      </div>
-
-      {feedbackNote && (
-        <div className="bg-mustard-100 text-ink-800 text-sm p-3 rounded-xl mb-3 border border-mustard-400">
-          {feedbackNote}
+          {selectedTileIds.length > 0 && !disabled && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="text-[11px] text-slate-400 hover:text-white flex items-center gap-1 transition-colors"
+            >
+              <RotateCcw className="w-3 h-3" />
+              {isBeginner ? 'Clear' : 'Borrar'}
+            </button>
+          )}
         </div>
-      )}
+
+        {/* Selected Tiles on Track */}
+        <div className="min-h-[50px] bg-slate-800/80 rounded-xl p-2 border border-slate-700 flex flex-wrap items-center justify-center gap-1.5">
+          {typedMode ? (
+            <input
+              type="text"
+              value={typedText}
+              onChange={e => setTypedText(e.target.value)}
+              placeholder={isBeginner ? "Type response here..." : "Escribe tu respuesta aquí..."}
+              disabled={disabled}
+              className="w-full text-center text-base font-medium text-white border-b border-blue-400 focus:outline-none bg-transparent"
+            />
+          ) : selectedTileIds.length === 0 ? (
+            <span className="text-xs text-slate-400 italic">
+              {isBeginner ? 'Tap metro tiles below to connect the sentence' : 'Toca las fichas para conectar la respuesta'}
+            </span>
+          ) : (
+            selectedTileIds.map(id => {
+              const tile = tileMap.get(id);
+              if (!tile) return null;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => handleTileClick(id)}
+                  className="px-2.5 py-1 rounded-lg bg-white text-slate-900 font-bold text-xs shadow-md border-b-2 border-blue-500 flex items-center gap-1 animate-pop hover:bg-blue-50"
+                >
+                  <span>{tile.text}</span>
+                </button>
+              );
+            })
+          )}
+        </div>
+      </div>
 
       {/* Available Word Tiles */}
-      {!typedMode && (
-        <div className="flex flex-wrap justify-center gap-2.5 mb-6">
+      <div className="mb-2">
+        <div className="flex flex-wrap justify-center gap-1.5 min-h-[70px] items-center p-1 bg-cream-100/60 rounded-2xl border border-cream-200">
           {prompt.tiles.map(tile => {
             const isSelected = selectedTileIds.includes(tile.id);
             return (
@@ -166,10 +209,10 @@ export const PhraseBuilderGame: React.FC<Props> = ({ prompt, learnerLevel = 'beg
                 type="button"
                 onClick={() => handleTileClick(tile.id)}
                 disabled={disabled || isSelected}
-                className={`min-h-[48px] px-4 py-2.5 rounded-xl font-medium text-base transition-all ${
+                className={`px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm transition-all shadow-sm ${
                   isSelected
-                    ? 'opacity-30 bg-cream-200 text-ink-400 cursor-not-allowed'
-                    : 'notebook-card-interactive bg-white text-ink-900 active:scale-95 hover:border-terracotta-500'
+                    ? 'opacity-25 bg-cream-200 text-ink-300 pointer-events-none scale-95'
+                    : 'bg-white hover:bg-blue-50 text-ink-900 border border-cream-300 hover:border-blue-400 active:scale-95'
                 }`}
               >
                 {tile.text}
@@ -177,59 +220,31 @@ export const PhraseBuilderGame: React.FC<Props> = ({ prompt, learnerLevel = 'beg
             );
           })}
         </div>
-      )}
+      </div>
 
-      {/* Bottom thumb-friendly action bar */}
-      <div className="safe-bottom pt-2">
-        <div className="flex items-center gap-3">
-          {!typedMode && selectedTileIds.length > 0 && (
-            <button
-              type="button"
-              onClick={handleClear}
-              disabled={disabled}
-              className="h-12 w-12 rounded-xl bg-cream-200 text-ink-700 flex items-center justify-center hover:bg-cream-300 transition-colors"
-              aria-label="Clear tiles"
-            >
-              <RotateCcw className="w-5 h-5" />
-            </button>
-          )}
+      {/* Bottom Controls */}
+      <div className="flex items-center gap-2 pt-1 safe-bottom">
+        <button
+          type="button"
+          onClick={() => setTypedMode(!typedMode)}
+          className="h-12 px-3 rounded-xl border border-cream-300 text-xs font-bold text-ink-600 hover:bg-cream-100 transition-colors shrink-0"
+        >
+          {typedMode ? 'Tiles' : 'Type'}
+        </button>
 
-          <button
-            type="button"
-            onClick={() => audioService.speakSpanish(constructedSentence || prompt.canonicalDisplay)}
-            className="h-12 w-12 rounded-xl bg-cream-200 text-ink-700 flex items-center justify-center hover:bg-cream-300 transition-colors"
-            aria-label="Speak pronunciation"
-          >
-            <Volume2 className="w-5 h-5" />
-          </button>
-
-          <button
-            type="button"
-            onClick={handleCheck}
-            disabled={disabled || (!typedMode && selectedTileIds.length === 0)}
-            className={`flex-1 h-14 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 shadow-md transition-all ${
-              disabled || (!typedMode && selectedTileIds.length === 0)
-                ? 'bg-cream-300 text-ink-400 cursor-not-allowed'
-                : 'bg-teal-500 hover:bg-teal-600 text-white active:scale-98'
-            }`}
-          >
-            <Check className="w-5 h-5" />
-            {UI_TEXT.checkAnswer[learnerLevel]}
-          </button>
-        </div>
-
-        {/* Stretch difficulty typed mode toggle */}
-        <div className="text-center mt-2">
-          <button
-            type="button"
-            onClick={() => setTypedMode(!typedMode)}
-            className="text-xs text-ink-500 underline hover:text-ink-800"
-          >
-            {typedMode
-              ? (learnerLevel === 'advanced' ? 'Usar fichas de palabras' : 'Switch to Word Tiles')
-              : (learnerLevel === 'advanced' ? 'Escribir respuesta (teclado)' : 'Switch to Typing (Stretch)')}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleCheck}
+          disabled={disabled || (!typedMode && selectedTileIds.length === 0)}
+          className={`flex-1 h-12 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 ${
+            selectedTileIds.length > 0 || typedText.length > 0
+              ? 'bg-blue-600 hover:bg-blue-700 active:scale-98 text-white shadow-blue-200'
+              : 'bg-cream-200 text-ink-400 cursor-not-allowed'
+          }`}
+        >
+          <Check className="w-4 h-4" />
+          <span>{isBeginner ? 'Check Sentence' : 'Comprobar Vía'}</span>
+        </button>
       </div>
     </div>
   );

@@ -25,7 +25,6 @@ export const SessionView: React.FC<Props> = ({
   const currentPrompt = sessionController.getCurrentPrompt();
 
   if (!currentPrompt) {
-    // If no prompt, session is already complete
     onFinishSession(sessionState);
     return null;
   }
@@ -36,7 +35,7 @@ export const SessionView: React.FC<Props> = ({
     assisted: boolean = false,
     evidenceOverride?: any
   ) => {
-    if (evaluation) return; // Prevent double-submit
+    if (evaluation) return;
     const res = await sessionController.submitAnswer(outcome, payload, assisted, evidenceOverride);
     setEvaluation(res);
   };
@@ -63,17 +62,17 @@ export const SessionView: React.FC<Props> = ({
   const isLast = currentIndex === totalQuestions - 1;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-60px)] justify-between max-w-lg mx-auto w-full pb-4">
+    <div className="h-[100dvh] max-h-[100dvh] flex flex-col justify-between max-w-lg mx-auto w-full overflow-hidden select-none">
       {/* Session Progress Header */}
-      <div className="px-4 pt-2 pb-1 flex items-center justify-between gap-3">
+      <div className="px-3 pt-2 pb-1 flex items-center justify-between gap-3 shrink-0">
         <button
           type="button"
           onClick={() => {
             audioService.playTap();
             onExitSession();
           }}
-          className="p-2 rounded-xl text-ink-500 hover:text-ink-900 hover:bg-cream-200 transition-colors"
-          aria-label="Stop session and save"
+          className="p-1.5 rounded-xl text-ink-500 hover:text-ink-900 hover:bg-cream-200 transition-colors"
+          aria-label="Salir de la sesión"
         >
           <X className="w-5 h-5" />
         </button>
@@ -96,13 +95,13 @@ export const SessionView: React.FC<Props> = ({
           })}
         </div>
 
-        <span className="text-xs font-bold text-ink-500 font-mono">
+        <span className="text-xs font-bold text-ink-500 font-mono shrink-0">
           {currentIndex + 1}/{totalQuestions}
         </span>
       </div>
 
-      {/* Main Game Surface */}
-      <div className="flex-1 flex flex-col justify-center overflow-y-auto">
+      {/* Main Game Surface (Zero-scroll, centered) */}
+      <div className="flex-1 min-h-0 flex flex-col justify-center overflow-hidden">
         <PromptRenderer
           key={currentPrompt.id}
           prompt={currentPrompt}

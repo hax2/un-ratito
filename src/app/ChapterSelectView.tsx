@@ -3,7 +3,8 @@ import { CHAPTERS } from '../content/packs/chapters';
 import { Chapter, SupportLevel } from '../content/types';
 import { saveSettings } from '../storage/db';
 import { audioService } from '../audio/audioService';
-import { Search, Volume2, Check, ArrowLeft, Play } from 'lucide-react';
+import { Search, Volume2, Check, ArrowLeft, Play, BookOpen } from 'lucide-react';
+import { CurriculumRoadmapModal } from '../components/CurriculumRoadmapModal';
 
 interface Props {
   currentChapterId: string;
@@ -20,6 +21,7 @@ export const ChapterSelectView: React.FC<Props> = ({
 }) => {
   const [search, setSearch] = useState('');
   const [supportLevel, setSupportLevel] = useState<SupportLevel>('standard');
+  const [showRoadmap, setShowRoadmap] = useState(false);
 
   const filteredChapters = CHAPTERS.filter(ch => {
     const q = search.toLowerCase();
@@ -51,13 +53,27 @@ export const ChapterSelectView: React.FC<Props> = ({
         </span>
       </div>
 
-      <div>
-        <h2 className="text-2xl font-serif text-ink-900 font-bold">
-          Chapter Catalogue
-        </h2>
-        <p className="text-xs text-ink-500 mt-1">
-          Directly accessible at any level. No artificial locks.
-        </p>
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h2 className="text-2xl font-serif text-ink-900 font-bold">
+            Chapter Catalogue
+          </h2>
+          <p className="text-xs text-ink-500 mt-1">
+            Directly accessible at any level. No artificial locks.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            audioService.playTap();
+            setShowRoadmap(true);
+          }}
+          className="px-3 py-2 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold flex items-center gap-1.5 hover:bg-teal-100 transition-colors shrink-0 shadow-2xs"
+          title="Ver Plan de Estudios y Hoja de Ruta A1–C1"
+        >
+          <BookOpen className="w-3.5 h-3.5 text-teal-600" />
+          <span>Hoja de Ruta</span>
+        </button>
       </div>
 
       {/* Search Input */}
@@ -194,6 +210,10 @@ export const ChapterSelectView: React.FC<Props> = ({
           );
         })}
       </div>
+
+      {showRoadmap && (
+        <CurriculumRoadmapModal onClose={() => setShowRoadmap(false)} />
+      )}
     </div>
   );
 };

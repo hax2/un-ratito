@@ -119,13 +119,14 @@ for (const prompt of ALL_PROMPTS) {
     if (!prompt.targetSlot || !prompt.targetSlot.drink) {
       errors.push(`Cafe prompt ${prompt.id} has invalid targetSlot`);
     }
-  } else if (prompt.game === 'slip') {
-    if (prompt.hasError) {
-      if (prompt.errorTokenIndex < 0 || prompt.errorTokenIndex >= prompt.tokens.length) {
-        errors.push(`Slip prompt ${prompt.id} has invalid errorTokenIndex`);
-      }
-      if (!prompt.correctionChoices.includes(prompt.correctCorrection)) {
-        errors.push(`Slip prompt ${prompt.id} correctCorrection not in choices`);
+  } else if (prompt.game === 'tapeo') {
+    if (!prompt.requiredItemIds || prompt.requiredItemIds.length === 0) {
+      errors.push(`Tapeo prompt ${prompt.id} has no requiredItemIds`);
+    }
+    const availIds = new Set(prompt.availableItems.map(i => i.id));
+    for (const req of prompt.requiredItemIds) {
+      if (!availIds.has(req)) {
+        errors.push(`Tapeo prompt ${prompt.id} required item ${req} not in availableItems`);
       }
     }
   } else if (prompt.game === 'listening') {

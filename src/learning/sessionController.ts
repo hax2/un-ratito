@@ -180,9 +180,9 @@ export class SessionController {
       const gameStampMap: Record<string, string> = {
         market: 'market',
         cafe: 'cafe',
+        tapeo: 'cafe',
         builder: 'station',
         tales: 'park',
-        slip: 'station',
         listening: 'cafe',
       };
       const stampId = gameStampMap[this.state.gameId] || 'market';
