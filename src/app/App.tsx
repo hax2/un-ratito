@@ -84,11 +84,11 @@ export const App: React.FC = () => {
     saveSettings({ learnerLevel: newLevel, selectedChapterId: newChapter });
   };
 
-  const isSessionRoute = route === '#/session';
+  const isFullscreenRoute = route === '#/session' || route === '#/summary';
 
   return (
-    <div className="min-h-screen flex flex-col bg-cream-50 text-ink-900 font-sans">
-      {!isSessionRoute && (
+    <div className="h-[100dvh] max-h-[100dvh] w-full overflow-hidden flex flex-col bg-cream-50 text-ink-900 font-sans">
+      {!isFullscreenRoute && (
         <Header
           currentRoute={route}
           learnerLevel={learnerLevel}
@@ -97,7 +97,7 @@ export const App: React.FC = () => {
         />
       )}
 
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 min-h-0 flex flex-col overflow-y-auto">
         {route === '#/' && (
           <HomeView
             learnerLevel={learnerLevel}
