@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-cream-bg: #FDFBF7;
+  --color-cream-card: #FFFFFF;
+  --color-ink: #1C1917;
+  --color-ink-muted: #78716C;
+  --color-terracotta: #D95D39;
+  --color-teal: #2A7B88;
+  --color-mustard: #E5A93C;
+}
+
+body {
+  background-color: var(--color-cream-bg);
+  color: var(--color-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Accessible focus styling */
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 3px solid #2A7B88;
+  outline-offset: 2px;
+}
+
+/* Safe area support for mobile phones (notches, home bars) */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 16px);
+}
+
+/* Subtle texture & card styling */
+.notebook-card {
+  background: #FFFFFF;
+  border: 1.5px solid #EFEAE0;
+  box-shadow: 0 4px 12px rgba(28, 25, 23, 0.04);
+}
+
+.notebook-card-interactive {
+  background: #FFFFFF;
+  border: 1.5px solid #EFEAE0;
+  box-shadow: 0 3px 8px rgba(28, 25, 23, 0.04);
+  transition: all 0.15s ease-in-out;
+}
+
+.notebook-card-interactive:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 4px rgba(28, 25, 23, 0.08);
+}
