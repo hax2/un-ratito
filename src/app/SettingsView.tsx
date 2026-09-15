@@ -7,6 +7,8 @@ import {
   saveSettings,
 } from '../storage/db';
 import { audioService } from '../audio/audioService';
+import { LearnerLevel } from '../content/types';
+import { LEVEL_INFO } from '../utils/language';
 import {
   ArrowLeft,
   Volume2,
@@ -17,15 +19,18 @@ import {
   CheckCircle2,
   AlertTriangle,
   Info,
+  GraduationCap,
 } from 'lucide-react';
 
 interface Props {
   onBack: () => void;
+  onLevelChanged?: (lvl: LearnerLevel) => void;
 }
 
-export const SettingsView: React.FC<Props> = ({ onBack }) => {
+export const SettingsView: React.FC<Props> = ({ onBack, onLevelChanged }) => {
   const [soundEnabled, setSoundEnabled] = useState(audioService.isSoundEnabled());
   const [speechRate, setSpeechRate] = useState(audioService.getSpeechRate());
+  const [learnerLevel, setLearnerLevel] = useState<LearnerLevel>('beginner');
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -33,8 +38,17 @@ export const SettingsView: React.FC<Props> = ({ onBack }) => {
     getSettings().then(cfg => {
       setSoundEnabled(cfg.soundEnabled);
       setSpeechRate(cfg.speechRate);
+      setLearnerLevel(cfg.learnerLevel || 'beginner');
     });
   }, []);
+
+  const handleLevelChange = (lvl: LearnerLevel) => {
+    setLearnerLevel(lvl);
+    saveSettings({ learnerLevel: lvl });
+    if (onLevelChanged) onLevelChanged(lvl);
+    audioService.playTap();
+    setMessage({ type: 'success', text: `Nivel actualizado a ${LEVEL_INFO[lvl].name} (${LEVEL_INFO[lvl].badge})` });
+  };
 
   const handleToggleSound = () => {
     const next = !soundEnabled;
@@ -128,6 +142,54 @@ export const SettingsView: React.FC<Props> = ({ onBack }) => {
           <span>{message.text}</span>
         </div>
       )}
+
+      {/* Level & Immersion Settings */}
+      <div className="bg-white rounded-3xl p-5 border border-cream-300 shadow-sm space-y-3">
+        <div className="flex items-center gap-2">
+          <GraduationCap className="w-5 h-5 text-terracotta-600" />
+          <h3 className="text-xs font-bold text-ink-400 uppercase tracking-wider">
+            Nivel de español (Proficiency & Immersion)
+          </h3>
+        </div>
+        <p className="text-xs text-ink-500">
+          Higher levels automatically hide English translations and present prompts in natural Spanish.
+        </p>
+
+        <div className="space-y-2 pt-1">
+          {(['beginner', 'intermediate', 'advanced'] as const).map(lvl => {
+            const info = LEVEL_INFO[lvl];
+            const isSelected = learnerLevel === lvl;
+
+            return (
+              <button
+                key={lvl}
+                type="button"
+                onClick={() => handleLevelChange(lvl)}
+                className={`w-full p-3.5 rounded-2xl text-left border transition-all flex items-start justify-between gap-3 ${
+                  isSelected
+                    ? 'bg-cream-50 border-teal-500 ring-2 ring-teal-200'
+                    : 'bg-white border-cream-200 hover:border-cream-300'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="font-bold text-sm text-ink-900">{info.name}</span>
+                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded ${info.color}`}>
+                      {info.badge}
+                    </span>
+                  </div>
+                  <p className="text-xs text-ink-500 leading-snug">{info.description}</p>
+                </div>
+                {isSelected && (
+                  <div className="w-5 h-5 rounded-full bg-teal-500 text-white flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Audio Settings */}
       <div className="bg-white rounded-3xl p-5 border border-cream-300 shadow-sm space-y-4">

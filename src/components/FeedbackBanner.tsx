@@ -1,12 +1,14 @@
 import React from 'react';
-import { Target } from '../content/types';
+import { Target, LearnerLevel } from '../content/types';
 import { CheckCircle2, XCircle, AlertCircle, ArrowRight, Volume2 } from 'lucide-react';
 import { audioService } from '../audio/audioService';
+import { UI_TEXT } from '../utils/language';
 
 interface Props {
   outcome: 'correct' | 'incorrect' | 'assisted' | 'valid-off-target';
   explanation: string;
   target?: Target;
+  learnerLevel?: LearnerLevel;
   onNext: () => void;
   isLastPrompt: boolean;
 }
@@ -15,6 +17,7 @@ export const FeedbackBanner: React.FC<Props> = ({
   outcome,
   explanation,
   target,
+  learnerLevel = 'beginner',
   onNext,
   isLastPrompt,
 }) => {
@@ -44,13 +47,23 @@ export const FeedbackBanner: React.FC<Props> = ({
             )}
             <div>
               <h3 className="font-bold text-base leading-tight">
-                {outcome === 'correct'
-                  ? '¡Muy bien! (Correct)'
-                  : outcome === 'assisted'
-                  ? 'Good (Assisted)'
-                  : outcome === 'valid-off-target'
-                  ? 'Valid Spanish, but try the target construction'
-                  : 'Needs repair'}
+                {learnerLevel === 'beginner' ? (
+                  outcome === 'correct'
+                    ? '¡Muy bien! (Correct)'
+                    : outcome === 'assisted'
+                    ? 'Good (Assisted)'
+                    : outcome === 'valid-off-target'
+                    ? 'Valid Spanish, but try the target construction'
+                    : 'Needs repair'
+                ) : (
+                  outcome === 'correct'
+                    ? '¡Excelente! (Correcto)'
+                    : outcome === 'assisted'
+                    ? 'Bien (con ayuda)'
+                    : outcome === 'valid-off-target'
+                    ? 'Válido, pero practica la construcción indicada'
+                    : 'Necesita corrección'
+                )}
               </h3>
               <p className="text-xs md:text-sm text-ink-700 mt-1">
                 {explanation}
@@ -58,7 +71,7 @@ export const FeedbackBanner: React.FC<Props> = ({
               {target && (
                 <div className="mt-2 flex items-center gap-2">
                   <span className="text-xs bg-white/80 px-2 py-0.5 rounded font-mono text-ink-800 border border-cream-300">
-                    Target: {target.spanish}
+                    {learnerLevel === 'beginner' ? 'Target' : 'Objetivo'}: {target.spanish}
                   </span>
                   <button
                     type="button"
@@ -84,7 +97,11 @@ export const FeedbackBanner: React.FC<Props> = ({
               : 'bg-terracotta-600 hover:bg-terracotta-700'
           }`}
         >
-          <span>{isLastPrompt ? 'See Summary' : 'Next Question'}</span>
+          <span>
+            {isLastPrompt
+              ? UI_TEXT.seeSummary[learnerLevel]
+              : UI_TEXT.nextQuestion[learnerLevel]}
+          </span>
           <ArrowRight className="w-5 h-5" />
         </button>
       </div>

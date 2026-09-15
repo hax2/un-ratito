@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { BuilderPrompt, BuilderTile } from '../../content/types';
+import { BuilderPrompt, BuilderTile, LearnerLevel } from '../../content/types';
 import { audioService } from '../../audio/audioService';
 import { Volume2, RotateCcw, Check, Sparkles } from 'lucide-react';
+import { UI_TEXT } from '../../utils/language';
 
 interface Props {
   prompt: BuilderPrompt;
+  learnerLevel?: LearnerLevel;
   onAnswer: (outcome: 'correct' | 'incorrect' | 'assisted' | 'valid-off-target', payload: any) => void;
   disabled?: boolean;
 }
 
-export const PhraseBuilderGame: React.FC<Props> = ({ prompt, onAnswer, disabled }) => {
+export const PhraseBuilderGame: React.FC<Props> = ({ prompt, learnerLevel = 'beginner', onAnswer, disabled }) => {
   const [selectedTileIds, setSelectedTileIds] = useState<string[]>([]);
   const [typedMode, setTypedMode] = useState(false);
   const [typedText, setTypedText] = useState('');
@@ -101,11 +103,16 @@ export const PhraseBuilderGame: React.FC<Props> = ({ prompt, onAnswer, disabled 
       <div className="text-center mb-4">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cream-200 text-ink-700 text-xs font-semibold tracking-wide uppercase mb-2">
           <Sparkles className="w-3.5 h-3.5 text-terracotta-500" />
-          Phrase Builder
+          {learnerLevel === 'advanced' ? 'Constructor de frases' : 'Phrase Builder'}
         </div>
         <h2 className="text-xl md:text-2xl font-serif text-ink-900 font-bold leading-tight">
-          {prompt.intent}
+          {learnerLevel === 'beginner' ? prompt.intent : (prompt.intentEs || prompt.intent)}
         </h2>
+        {learnerLevel === 'intermediate' && prompt.intentEs && (
+          <p className="text-xs text-ink-400 mt-1 italic">
+            ({prompt.intent})
+          </p>
+        )}
       </div>
 
       {/* Target construction sentence area */}
@@ -115,13 +122,13 @@ export const PhraseBuilderGame: React.FC<Props> = ({ prompt, onAnswer, disabled 
             type="text"
             value={typedText}
             onChange={e => setTypedText(e.target.value)}
-            placeholder="Type Spanish sentence here..."
+            placeholder={learnerLevel === 'beginner' ? "Type Spanish sentence here..." : "Escribe la frase en español aquí..."}
             disabled={disabled}
             className="w-full text-center text-lg font-medium p-2 border-b-2 border-teal-500 focus:outline-none bg-transparent"
           />
         ) : selectedTileIds.length === 0 ? (
           <span className="text-ink-400 text-sm italic select-none">
-            Tap tiles below to build the sentence
+            {learnerLevel === 'beginner' ? "Tap tiles below to build the sentence" : "Toca las fichas inferiores para formar la frase"}
           </span>
         ) : (
           selectedTileIds.map(id => {
@@ -207,7 +214,7 @@ export const PhraseBuilderGame: React.FC<Props> = ({ prompt, onAnswer, disabled 
             }`}
           >
             <Check className="w-5 h-5" />
-            Check Answer
+            {UI_TEXT.checkAnswer[learnerLevel]}
           </button>
         </div>
 
@@ -218,7 +225,9 @@ export const PhraseBuilderGame: React.FC<Props> = ({ prompt, onAnswer, disabled 
             onClick={() => setTypedMode(!typedMode)}
             className="text-xs text-ink-500 underline hover:text-ink-800"
           >
-            {typedMode ? 'Switch to Word Tiles' : 'Switch to Typing (Stretch)'}
+            {typedMode
+              ? (learnerLevel === 'advanced' ? 'Usar fichas de palabras' : 'Switch to Word Tiles')
+              : (learnerLevel === 'advanced' ? 'Escribir respuesta (teclado)' : 'Switch to Typing (Stretch)')}
           </button>
         </div>
       </div>

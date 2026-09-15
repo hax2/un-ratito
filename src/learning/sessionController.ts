@@ -43,18 +43,30 @@ export class SessionController {
     chapterId: string,
     gameId: GameId | 'mixed' = 'mixed',
     supportLevel: SupportLevel = 'standard',
-    promptLimit: number = 5
+    promptLimit: number = 5,
+    learnerLevel: 'beginner' | 'intermediate' | 'advanced' = 'beginner'
   ): Promise<SessionState> {
+    let resolvedChapterId = chapterId;
+    if (chapterId === 'auto') {
+      const levelMap: Record<string, string> = {
+        beginner: 'chapter-a',
+        intermediate: 'chapter-b',
+        advanced: 'chapter-c',
+      };
+      resolvedChapterId = levelMap[learnerLevel] || 'chapter-a';
+    }
+
     // Filter available candidate prompts
     let candidates = ALL_PROMPTS.filter(p => {
-      if (chapterId !== 'all' && p.chapterId !== chapterId) return false;
+      if (resolvedChapterId !== 'all' && p.chapterId !== resolvedChapterId) return false;
       if (gameId !== 'mixed' && p.game !== gameId) return false;
       return true;
     });
 
     if (candidates.length === 0) {
-      // Fallback to all prompts if none match exact filter
-      candidates = ALL_PROMPTS;
+      // Fallback to game or all prompts if none match exact chapter
+      candidates = ALL_PROMPTS.filter(p => gameId === 'mixed' || p.game === gameId);
+      if (candidates.length === 0) candidates = ALL_PROMPTS;
     }
 
     // Shuffle and pick up to promptLimit
@@ -65,7 +77,7 @@ export class SessionController {
     const sessionId = `ses_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     const newState: SessionState = {
       sessionId,
-      chapterId,
+      chapterId: resolvedChapterId,
       gameId,
       supportLevel,
       promptIds,

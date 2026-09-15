@@ -13,6 +13,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     evidence: 'scaffolded-production',
     supportLevel: 'supported',
     intent: 'Ask for the bill, please.',
+    intentEs: 'Pide la cuenta, por favor.',
     tiles: [
       { id: 't1', text: 'La' },
       { id: 't2', text: 'cuenta,' },
@@ -36,6 +37,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     evidence: 'scaffolded-production',
     supportLevel: 'supported',
     intent: 'Order a coffee, please.',
+    intentEs: 'Pide un café, por favor.',
     tiles: [
       { id: 't1', text: 'Un' },
       { id: 't2', text: 'café,' },
@@ -58,6 +60,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     evidence: 'scaffolded-production',
     supportLevel: 'standard',
     intent: 'Say politely: I would like a coffee with milk.',
+    intentEs: 'Di con cortesía: Quería un café con leche.',
     tiles: [
       { id: 't1', text: 'Quería' },
       { id: 't2', text: 'un' },
@@ -87,6 +90,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     evidence: 'scaffolded-production',
     supportLevel: 'standard',
     intent: 'Ask for a table for two, please.',
+    intentEs: 'Pide una mesa para dos personas, por favor.',
     tiles: [
       { id: 't1', text: 'Una' },
       { id: 't2', text: 'mesa' },
@@ -113,6 +117,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     evidence: 'scaffolded-production',
     supportLevel: 'standard',
     intent: 'Build: I was studying when you called.',
+    intentEs: 'Construye: Estaba estudiando cuando llamaste.',
     tiles: [
       { id: 't1', text: 'Estaba' },
       { id: 't2', text: 'estudiando' },
@@ -136,6 +141,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     evidence: 'scaffolded-production',
     supportLevel: 'supported',
     intent: 'Build: I was cooking.',
+    intentEs: 'Construye: Estaba cocinando.',
     tiles: [
       { id: 't1', text: 'Estaba' },
       { id: 't2', text: 'cocinando.' },
@@ -157,6 +163,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     evidence: 'scaffolded-production',
     supportLevel: 'standard',
     intent: 'Build: We were having dinner.',
+    intentEs: 'Construye: Estábamos cenando.',
     tiles: [
       { id: 't1', text: 'Estábamos' },
       { id: 't2', text: 'cenando.' },
@@ -180,6 +187,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     evidence: 'scaffolded-production',
     supportLevel: 'stretch',
     intent: 'Build: If I had more time, I would travel more.',
+    intentEs: 'Construye: Si tuviera más tiempo, viajaría más.',
     tiles: [
       { id: 't1', text: 'Si' },
       { id: 't2', text: 'tuviera' },
@@ -193,7 +201,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     ],
     acceptedSequences: [
       ['t1', 't2', 't3', 't4', 't5', 't6'],
-      ['t1', 't9', 't3', 't4', 't5', 't6'], // tuviese variant accepted!
+      ['t1', 't9', 't3', 't4', 't5', 't6'],
     ],
     canonicalDisplay: 'Si tuviera más tiempo, viajaría más.',
     explanation: 'Hypothetical conditions: "Si + imperfect subjunctive (tuviera/tuviese)" + "conditional (viajaría)".',
@@ -207,6 +215,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     evidence: 'scaffolded-production',
     supportLevel: 'standard',
     intent: 'Give advice: If I were you, I would speak with her.',
+    intentEs: 'Da un consejo: Si fuera tú, hablaría con ella.',
     tiles: [
       { id: 't1', text: 'Si' },
       { id: 't2', text: 'fuera' },
@@ -244,6 +253,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
         speakerRole: 'server',
         text: '¡Buenos días! ¿Qué va a ser?',
         goal: 'Order a coffee with milk politely.',
+        goalEs: 'Pide un café con leche con cortesía.',
         choices: [
           {
             id: 'c1',
@@ -266,6 +276,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
         speakerRole: 'server',
         text: '¿Algo para picar? ¿Un cruasán o tostada con tomate?',
         goal: 'Politely ask for toast with tomato.',
+        goalEs: 'Pide una tostada con tomate.',
         choices: [
           {
             id: 'c3',
@@ -288,6 +299,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
         speakerRole: 'server',
         text: 'Aquí tienes. ¿Deseas algo más?',
         goal: 'Ask for the bill.',
+        goalEs: 'Pide la cuenta para terminar.',
         choices: [
           {
             id: 'c5',
@@ -324,6 +336,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
         speakerRole: 'friend',
         text: '¡Oye! Te llamé ayer a las siete y no contestaste. ¿Qué estabas haciendo?',
         goal: 'Explain that you were cooking when he called.',
+        goalEs: 'Explica que estabas cocinando cuando llamó.',
         choices: [
           {
             id: 'c1',
@@ -346,6 +359,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
         speakerRole: 'friend',
         text: '¿Y después cenasteis en casa?',
         goal: 'Say that you and your roommate were dining together.',
+        goalEs: 'Di que estabais cenando tranquilamente en casa.',
         choices: [
           {
             id: 'c3',
@@ -383,6 +397,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
         speakerRole: 'friend',
         text: 'Si pudieras mudarte a cualquier sitio mañana, ¿dónde vivirías?',
         goal: 'Express your wish to live near the sea if you could choose.',
+        goalEs: 'Expresa que vivirías cerca del mar si pudieras elegir.',
         choices: [
           {
             id: 'c1',
@@ -405,6 +420,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
         speakerRole: 'friend',
         text: '¿Y qué harías con todo el tiempo libre?',
         goal: 'Say you would learn guitar if you had more time.',
+        goalEs: 'Di que aprenderías guitarra si tuvieras más tiempo.',
         choices: [
           {
             id: 'c3',
@@ -438,6 +454,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     evidence: 'meaning-recognition',
     supportLevel: 'supported',
     instruction: 'Put the apple in the shopping bag.',
+    instructionEs: 'Pon la manzana en la bolsa.',
     correctItemId: 'item-apple',
     choices: [
       { id: 'item-apple', spanish: 'la manzana', english: 'the apple', gender: 'la', icon: 'apple' },
@@ -455,6 +472,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     evidence: 'meaning-recognition',
     supportLevel: 'supported',
     instruction: 'Put the bread in the shopping bag.',
+    instructionEs: 'Pon el pan en la bolsa.',
     correctItemId: 'item-bread',
     choices: [
       { id: 'item-cheese', spanish: 'el queso', english: 'the cheese', gender: 'el', icon: 'cheese' },
@@ -472,6 +490,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     evidence: 'meaning-recognition',
     supportLevel: 'standard',
     instruction: 'Añade el agua a la bolsa.',
+    instructionEs: 'Añade el agua a la bolsa.',
     correctItemId: 'item-water',
     choices: [
       { id: 'item-water', spanish: 'el agua', english: 'the water', gender: 'el', icon: 'water' },
@@ -489,6 +508,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     evidence: 'meaning-recognition',
     supportLevel: 'supported',
     instruction: 'Put the cheese in the shopping bag.',
+    instructionEs: 'Pon el queso en la bolsa.',
     correctItemId: 'item-cheese',
     choices: [
       { id: 'item-bread', spanish: 'el pan', english: 'the bread', gender: 'el', icon: 'bread' },
@@ -506,6 +526,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     evidence: 'meaning-recognition',
     supportLevel: 'supported',
     instruction: 'Put the oranges in the bag.',
+    instructionEs: 'Pon las naranjas en la bolsa.',
     correctItemId: 'item-orange',
     choices: [
       { id: 'item-orange', spanish: 'las naranjas', english: 'the oranges', gender: 'las', icon: 'orange' },
@@ -591,6 +612,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     correctionChoices: ['cocinando', 'cocinó', 'cocina'],
     correctCorrection: 'cocinando',
     correctedSentence: 'Ayer estaba cocinando cuando llamaste.',
+    instructionEs: 'Toca la palabra incorrecta y selecciona la corrección.',
     explanation: 'After "estar", use the gerund (-ando/-iendo): "estaba cocinando", never the infinitive.',
   },
   {
@@ -608,6 +630,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     correctionChoices: ['tuviera', 'tengo', 'tuve'],
     correctCorrection: 'tuviera',
     correctedSentence: 'Si tuviera más tiempo, viajaría más.',
+    instructionEs: 'Encuentra el fallo gramatical en la condición irreal.',
     explanation: 'Never use the conditional ("tendría") directly following "si" for hypothetical conditions. Use the imperfect subjunctive ("tuviera").',
   },
   {
@@ -625,6 +648,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     correctionChoices: ['una', 'el', 'la'],
     correctCorrection: 'una',
     correctedSentence: 'Quiero una mesa para dos personas.',
+    instructionEs: 'Detecta el error de concordancia de género.',
     explanation: '"Mesa" is feminine, so it requires the feminine article: "una mesa".',
   },
   {
@@ -642,6 +666,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     correctionChoices: ['Sentence is correct as is'],
     correctCorrection: 'Sentence is correct as is',
     correctedSentence: 'Mientras yo cocinaba, él ponía la mesa.',
+    instructionEs: 'Determina si la oración contiene algún fallo.',
     explanation: 'This sentence is already completely correct! Two simultaneous ongoing actions in the imperfect.',
   },
 
@@ -659,6 +684,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     clipSpanish: 'Perdona, quería pedir la cuenta cuando puedas.',
     transcript: 'Perdona, quería pedir la cuenta cuando puedas.',
     question: 'What is the customer asking for?',
+    questionEs: '¿Qué está pidiendo el cliente?',
     choices: [
       { id: 'c1', text: 'To pay the bill when the waiter has a moment', isCorrect: true },
       { id: 'c2', text: 'To order another coffee right now', isCorrect: false },
@@ -677,6 +703,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     clipSpanish: 'Cuando llegué a su casa, todavía estaban cenando.',
     transcript: 'Cuando llegué a su casa, todavía estaban cenando.',
     question: 'What was the order of events?',
+    questionEs: '¿En qué orden ocurrieron los acontecimientos?',
     choices: [
       { id: 'c1', text: 'Dinner was already in progress when the speaker arrived.', isCorrect: true },
       { id: 'c2', text: 'They started having dinner after the speaker arrived.', isCorrect: false },
@@ -695,6 +722,7 @@ export const ALL_PROMPTS: AnyPrompt[] = [
     clipSpanish: 'Si fuera tú, no le diría nada hasta mañana.',
     transcript: 'Si fuera tú, no le diría nada hasta mañana.',
     question: 'What is the speaker advising?',
+    questionEs: '¿Qué aconseja el interlocutor?',
     choices: [
       { id: 'c1', text: 'Waiting until tomorrow before saying anything', isCorrect: true },
       { id: 'c2', text: 'Speaking up immediately tonight', isCorrect: false },

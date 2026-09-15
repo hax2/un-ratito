@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { GameId, SessionState } from '../content/types';
+import { GameId, LearnerLevel, SessionState } from '../content/types';
 import { sessionController } from '../learning/sessionController';
-import { getSettings } from '../storage/db';
+import { getSettings, saveSettings } from '../storage/db';
 import { Header } from './Header';
 import { HomeView } from './HomeView';
 import { ChapterSelectView } from './ChapterSelectView';
@@ -9,15 +9,22 @@ import { SessionView } from './SessionView';
 import { SummaryView } from './SummaryView';
 import { NeighborhoodView } from './NeighborhoodView';
 import { SettingsView } from './SettingsView';
+import { LevelSelectorModal } from '../components/LevelSelectorModal';
+import { LEVEL_INFO } from '../utils/language';
 
 export const App: React.FC = () => {
   const [route, setRoute] = useState(window.location.hash || '#/');
   const [activeSession, setActiveSession] = useState<SessionState | null>(null);
   const [completedSession, setCompletedSession] = useState<SessionState | null>(null);
   const [selectedChapterId, setSelectedChapterId] = useState('chapter-a');
+  const [learnerLevel, setLearnerLevel] = useState<LearnerLevel>('beginner');
+  const [showLevelModal, setShowLevelModal] = useState(false);
 
   useEffect(() => {
-    getSettings().then(cfg => setSelectedChapterId(cfg.selectedChapterId));
+    getSettings().then(cfg => {
+      setSelectedChapterId(cfg.selectedChapterId || 'chapter-a');
+      setLearnerLevel(cfg.learnerLevel || 'beginner');
+    });
 
     const handleHashChange = () => {
       const h = window.location.hash || '#/';
@@ -32,7 +39,7 @@ export const App: React.FC = () => {
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, [selectedChapterId]);
+  }, [selectedChapterId, learnerLevel]);
 
   const navigate = (newRoute: string) => {
     window.location.hash = newRoute;
@@ -40,7 +47,13 @@ export const App: React.FC = () => {
   };
 
   const handleStartSession = async (chapterId: string, gameId: GameId | 'mixed' = 'mixed') => {
-    const session = await sessionController.startSession(chapterId, gameId);
+    const session = await sessionController.startSession(
+      chapterId,
+      gameId,
+      'standard',
+      5,
+      learnerLevel
+    );
     setActiveSession(session);
     navigate('#/session');
   };
@@ -64,17 +77,31 @@ export const App: React.FC = () => {
     navigate('#/');
   };
 
+  const handleSelectLevel = (newLevel: LearnerLevel) => {
+    setLearnerLevel(newLevel);
+    const newChapter = LEVEL_INFO[newLevel].chapterDefault;
+    setSelectedChapterId(newChapter);
+    saveSettings({ learnerLevel: newLevel, selectedChapterId: newChapter });
+  };
+
   const isSessionRoute = route === '#/session';
 
   return (
     <div className="min-h-screen flex flex-col bg-cream-50 text-ink-900 font-sans">
       {!isSessionRoute && (
-        <Header currentRoute={route} onNavigate={navigate} />
+        <Header
+          currentRoute={route}
+          learnerLevel={learnerLevel}
+          onOpenLevelSelector={() => setShowLevelModal(true)}
+          onNavigate={navigate}
+        />
       )}
 
       <main className="flex-1 flex flex-col">
         {route === '#/' && (
           <HomeView
+            learnerLevel={learnerLevel}
+            onOpenLevelSelector={() => setShowLevelModal(true)}
             onStartSession={handleStartSession}
             onResumeSession={handleResumeSession}
             onNavigate={navigate}
@@ -93,6 +120,7 @@ export const App: React.FC = () => {
         {route === '#/session' && activeSession && (
           <SessionView
             sessionState={activeSession}
+            learnerLevel={learnerLevel}
             onFinishSession={handleFinishSession}
             onExitSession={handleExitSession}
           />
@@ -111,9 +139,21 @@ export const App: React.FC = () => {
         )}
 
         {route === '#/settings' && (
-          <SettingsView onBack={() => navigate('#/')} />
+          <SettingsView
+            onBack={() => navigate('#/')}
+            onLevelChanged={handleSelectLevel}
+          />
         )}
       </main>
+
+      {/* Quick-switch Level Modal */}
+      {showLevelModal && (
+        <LevelSelectorModal
+          currentLevel={learnerLevel}
+          onSelectLevel={handleSelectLevel}
+          onClose={() => setShowLevelModal(false)}
+        />
+      )}
     </div>
   );
 };

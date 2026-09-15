@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CHAPTERS } from '../content/packs/chapters';
-import { GameId, SessionState, StampRecord } from '../content/types';
+import { GameId, LearnerLevel, SessionState, StampRecord } from '../content/types';
 import { getAllStamps, getLatestActiveSession, getSettings } from '../storage/db';
 import {
   Play,
@@ -14,16 +14,26 @@ import {
   Compass,
   MapPin,
   ChevronRight,
+  GraduationCap,
 } from 'lucide-react';
 import { audioService } from '../audio/audioService';
+import { LEVEL_INFO, UI_TEXT } from '../utils/language';
 
 interface Props {
+  learnerLevel?: LearnerLevel;
+  onOpenLevelSelector?: () => void;
   onStartSession: (chapterId: string, gameId: GameId | 'mixed') => void;
   onResumeSession: () => void;
   onNavigate: (route: string) => void;
 }
 
-export const HomeView: React.FC<Props> = ({ onStartSession, onResumeSession, onNavigate }) => {
+export const HomeView: React.FC<Props> = ({
+  learnerLevel = 'beginner',
+  onOpenLevelSelector,
+  onStartSession,
+  onResumeSession,
+  onNavigate,
+}) => {
   const [activeSession, setActiveSession] = useState<SessionState | null>(null);
   const [stamps, setStamps] = useState<StampRecord[]>([]);
   const [selectedChapterId, setSelectedChapterId] = useState('chapter-a');
@@ -46,48 +56,60 @@ export const HomeView: React.FC<Props> = ({ onStartSession, onResumeSession, onN
   }[] = [
     {
       id: 'market',
-      title: 'Pocket Market',
-      description: 'Fill the bag with everyday items & noun genders',
+      title: learnerLevel === 'advanced' ? 'Mercado de bolsillo' : 'Pocket Market',
+      description: learnerLevel === 'advanced'
+        ? 'Añade artículos cotidianos con su género (el/la)'
+        : 'Fill the bag with everyday items & noun genders',
       icon: <ShoppingBag className="w-5 h-5 text-mustard-600" />,
-      badge: 'Beginner',
+      badge: learnerLevel === 'advanced' ? 'A1–A2' : 'Beginner',
       bg: 'bg-mustard-100/60',
     },
     {
       id: 'cafe',
-      title: 'Café, Please',
-      description: 'Assemble café orders, milk modifiers & numbers',
+      title: learnerLevel === 'advanced' ? 'Café, por favor' : 'Café, Please',
+      description: learnerLevel === 'advanced'
+        ? 'Prepara pedidos, tipos de leche y cantidades'
+        : 'Assemble café orders, milk modifiers & numbers',
       icon: <Coffee className="w-5 h-5 text-terracotta-600" />,
-      badge: 'Everyday',
+      badge: learnerLevel === 'advanced' ? 'Diario' : 'Everyday',
       bg: 'bg-terracotta-100/60',
     },
     {
       id: 'builder',
-      title: 'Phrase Builder',
-      description: 'Tap word tiles into natural Spanish sentences',
+      title: learnerLevel === 'advanced' ? 'Constructor de frases' : 'Phrase Builder',
+      description: learnerLevel === 'advanced'
+        ? 'Forma oraciones con fichas y combinaciones'
+        : 'Tap word tiles into natural Spanish sentences',
       icon: <Sparkles className="w-5 h-5 text-teal-600" />,
       badge: 'Core',
       bg: 'bg-teal-100/60',
     },
     {
       id: 'slip',
-      title: 'Spot the Slip',
-      description: 'Inspect signs, find grammar errors & repair them',
+      title: learnerLevel === 'advanced' ? 'Caza el error' : 'Spot the Slip',
+      description: learnerLevel === 'advanced'
+        ? 'Detecta y corrige fallos de concordancia y modo'
+        : 'Inspect signs, find grammar errors & repair them',
       icon: <AlertTriangle className="w-5 h-5 text-terracotta-600" />,
       badge: 'Grammar',
       bg: 'bg-terracotta-100/60',
     },
     {
       id: 'tales',
-      title: 'Tiny Tales',
-      description: 'Short multi-turn conversations & choices',
+      title: learnerLevel === 'advanced' ? 'Microhistorias' : 'Tiny Tales',
+      description: learnerLevel === 'advanced'
+        ? 'Diálogos interactivos con decisiones naturales'
+        : 'Short multi-turn conversations & choices',
       icon: <BookOpen className="w-5 h-5 text-olive-600" />,
       badge: 'Stories',
       bg: 'bg-olive-100/60',
     },
     {
       id: 'listening',
-      title: 'What Did They Mean?',
-      description: 'Listen to clips, solve meaning & implication',
+      title: learnerLevel === 'advanced' ? '¿Qué querían decir?' : 'What Did They Mean?',
+      description: learnerLevel === 'advanced'
+        ? 'Escucha clips y deduce la intención o matiz'
+        : 'Listen to clips, solve meaning & implication',
       icon: <Headphones className="w-5 h-5 text-teal-600" />,
       badge: 'Audio',
       bg: 'bg-teal-100/60',
@@ -101,10 +123,12 @@ export const HomeView: React.FC<Props> = ({ onStartSession, onResumeSession, onN
         <div className="p-4 rounded-3xl bg-white border-2 border-teal-500 shadow-sm flex items-center justify-between gap-3">
           <div>
             <span className="text-xs font-bold text-teal-600 uppercase tracking-wider">
-              Session in Progress
+              {learnerLevel === 'beginner' ? 'Session in Progress' : 'Sesión en curso'}
             </span>
             <p className="text-sm font-semibold text-ink-900 mt-0.5">
-              Question {activeSession.currentPromptIndex + 1} of {activeSession.promptIds.length}
+              {learnerLevel === 'beginner'
+                ? `Question ${activeSession.currentPromptIndex + 1} of ${activeSession.promptIds.length}`
+                : `Pregunta ${activeSession.currentPromptIndex + 1} de ${activeSession.promptIds.length}`}
             </p>
           </div>
           <button
@@ -116,7 +140,7 @@ export const HomeView: React.FC<Props> = ({ onStartSession, onResumeSession, onN
             className="px-4 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-600 text-white font-bold text-sm shadow-sm flex items-center gap-1.5 active:scale-95"
           >
             <RotateCcw className="w-4 h-4" />
-            Resume
+            {learnerLevel === 'beginner' ? 'Resume' : 'Reanudar'}
           </button>
         </div>
       )}
@@ -124,13 +148,29 @@ export const HomeView: React.FC<Props> = ({ onStartSession, onResumeSession, onN
       {/* Hero "Play a minute" Banner */}
       <div className="bg-white rounded-3xl p-6 border border-cream-300 shadow-sm relative overflow-hidden">
         <div className="relative z-10 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-terracotta-50 text-terracotta-700 text-xs font-semibold">
-            <span>Chapter:</span>
-            <span className="font-bold">{currentChapter.title}</span>
+          <div className="flex flex-wrap items-center gap-2">
+            {onOpenLevelSelector && (
+              <button
+                type="button"
+                onClick={onOpenLevelSelector}
+                className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border transition-all ${LEVEL_INFO[learnerLevel].color}`}
+              >
+                <GraduationCap className="w-3.5 h-3.5" />
+                <span>Nivel: {LEVEL_INFO[learnerLevel].name}</span>
+                <span className="opacity-60 text-[10px]">({LEVEL_INFO[learnerLevel].badge})</span>
+              </button>
+            )}
+
+            <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-cream-200 text-ink-700 text-xs font-semibold">
+              <span>{learnerLevel === 'beginner' ? 'Chapter:' : 'Capítulo:'}</span>
+              <span className="font-bold">{currentChapter.title}</span>
+            </div>
           </div>
 
           <h2 className="text-2xl md:text-3xl font-serif text-ink-900 font-bold leading-tight">
-            A little Spanish whenever you have a moment.
+            {learnerLevel === 'beginner'
+              ? 'A little Spanish whenever you have a moment.'
+              : 'Un poco de español cuando tengas un momento.'}
           </h2>
 
           <p className="text-xs text-ink-500">
@@ -147,7 +187,7 @@ export const HomeView: React.FC<Props> = ({ onStartSession, onResumeSession, onN
               className="w-full h-14 rounded-2xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold text-lg shadow-md active:scale-98 transition-all flex items-center justify-center gap-2"
             >
               <Play className="w-5 h-5 fill-current" />
-              Play a Minute
+              {UI_TEXT.playMinute[learnerLevel]}
             </button>
           </div>
         </div>
@@ -162,7 +202,7 @@ export const HomeView: React.FC<Props> = ({ onStartSession, onResumeSession, onN
           <Compass className="w-5 h-5 text-terracotta-600" />
           <div>
             <span className="text-[11px] uppercase tracking-wider font-semibold text-ink-400">
-              Current Focus
+              {UI_TEXT.currentFocus[learnerLevel]}
             </span>
             <p className="text-sm font-bold text-ink-900 leading-none">
               {currentChapter.title} ({currentChapter.band})
@@ -174,7 +214,7 @@ export const HomeView: React.FC<Props> = ({ onStartSession, onResumeSession, onN
           onClick={() => onNavigate('#/chapters')}
           className="text-xs font-semibold text-teal-600 hover:text-teal-700 flex items-center gap-1"
         >
-          Change <ChevronRight className="w-3.5 h-3.5" />
+          {UI_TEXT.change[learnerLevel]} <ChevronRight className="w-3.5 h-3.5" />
         </button>
       </div>
 

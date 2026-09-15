@@ -2,13 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { Volume2, VolumeX, Settings, MapPin, Compass } from 'lucide-react';
 import { audioService } from '../audio/audioService';
 import { saveSettings } from '../storage/db';
+import { LearnerLevel } from '../content/types';
+import { LEVEL_INFO } from '../utils/language';
 
 interface Props {
   currentRoute: string;
+  learnerLevel?: LearnerLevel;
+  onOpenLevelSelector?: () => void;
   onNavigate: (route: string) => void;
 }
 
-export const Header: React.FC<Props> = ({ currentRoute, onNavigate }) => {
+export const Header: React.FC<Props> = ({
+  currentRoute,
+  learnerLevel = 'beginner',
+  onOpenLevelSelector,
+  onNavigate,
+}) => {
   const [soundOn, setSoundOn] = useState(audioService.isSoundEnabled());
 
   useEffect(() => {
@@ -49,6 +58,19 @@ export const Header: React.FC<Props> = ({ currentRoute, onNavigate }) => {
 
         {/* Quick controls & navigation */}
         <div className="flex items-center gap-1.5">
+          {onOpenLevelSelector && (
+            <button
+              type="button"
+              onClick={onOpenLevelSelector}
+              className={`px-2 py-1 rounded-xl text-xs font-bold transition-all border shadow-2xs flex items-center gap-1 ${
+                LEVEL_INFO[learnerLevel].color
+              }`}
+              title="Cambiar nivel / Change level"
+            >
+              <span>{LEVEL_INFO[learnerLevel].name}</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => onNavigate('#/chapters')}

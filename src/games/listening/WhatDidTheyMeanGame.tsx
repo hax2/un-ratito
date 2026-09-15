@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { ListeningPrompt } from '../../content/types';
+import { ListeningPrompt, LearnerLevel } from '../../content/types';
 import { audioService } from '../../audio/audioService';
 import { Headphones, Volume2, Eye, HelpCircle } from 'lucide-react';
+import { UI_TEXT } from '../../utils/language';
 
 interface Props {
   prompt: ListeningPrompt;
+  learnerLevel?: LearnerLevel;
   onAnswer: (
     outcome: 'correct' | 'incorrect' | 'assisted' | 'valid-off-target',
     payload: any,
@@ -14,7 +16,7 @@ interface Props {
   disabled?: boolean;
 }
 
-export const WhatDidTheyMeanGame: React.FC<Props> = ({ prompt, onAnswer, disabled }) => {
+export const WhatDidTheyMeanGame: React.FC<Props> = ({ prompt, learnerLevel = 'beginner', onAnswer, disabled }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false);
   const [selectedChoiceId, setSelectedChoiceId] = useState<string | null>(null);
@@ -55,10 +57,10 @@ export const WhatDidTheyMeanGame: React.FC<Props> = ({ prompt, onAnswer, disable
       <div className="text-center mb-3">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-600 text-xs font-semibold uppercase mb-1">
           <Headphones className="w-3.5 h-3.5" />
-          What Did They Mean?
+          {learnerLevel === 'advanced' ? 'Comprensión auditiva' : 'What Did They Mean?'}
         </div>
         <h2 className="text-lg md:text-xl font-serif text-ink-900 font-bold">
-          {prompt.question}
+          {learnerLevel === 'beginner' ? prompt.question : (prompt.questionEs || prompt.question)}
         </h2>
       </div>
 
@@ -76,7 +78,9 @@ export const WhatDidTheyMeanGame: React.FC<Props> = ({ prompt, onAnswer, disable
           <Volume2 className="w-9 h-9" />
         </button>
         <span className="text-xs text-ink-500 font-medium mt-3">
-          {isPlaying ? 'Listening to audio...' : 'Tap to hear the clip (Spain Spanish)'}
+          {isPlaying
+            ? (learnerLevel === 'beginner' ? 'Listening to audio...' : 'Reproduciendo audio...')
+            : UI_TEXT.tapToHear[learnerLevel]}
         </span>
 
         {/* Transcript Accordion / Assistance */}
@@ -91,7 +95,7 @@ export const WhatDidTheyMeanGame: React.FC<Props> = ({ prompt, onAnswer, disable
             className="mt-3 inline-flex items-center gap-1 text-xs text-ink-500 hover:text-ink-800 underline"
           >
             <Eye className="w-3.5 h-3.5" />
-            Show transcript (reading assistance)
+            {UI_TEXT.showTranscript[learnerLevel]}
           </button>
         )}
       </div>

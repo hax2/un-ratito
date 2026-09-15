@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { TaleChoice, TalesPrompt } from '../../content/types';
+import { TaleChoice, TalesPrompt, LearnerLevel } from '../../content/types';
 import { audioService } from '../../audio/audioService';
 import { BookOpen, Volume2, ArrowRight } from 'lucide-react';
+import { UI_TEXT } from '../../utils/language';
 
 interface Props {
   prompt: TalesPrompt;
+  learnerLevel?: LearnerLevel;
   onAnswer: (outcome: 'correct' | 'incorrect' | 'assisted' | 'valid-off-target', payload: any) => void;
   disabled?: boolean;
 }
 
-export const TinyTalesGame: React.FC<Props> = ({ prompt, onAnswer, disabled }) => {
+export const TinyTalesGame: React.FC<Props> = ({ prompt, learnerLevel = 'beginner', onAnswer, disabled }) => {
   const [currentTurnIndex, setCurrentTurnIndex] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState<TaleChoice | null>(null);
   const [history, setHistory] = useState<{ speaker: string; text: string; userReply: string; consequence: string }[]>([]);
@@ -100,7 +102,10 @@ export const TinyTalesGame: React.FC<Props> = ({ prompt, onAnswer, disabled }) =
         {/* Goal Indicator */}
         <div className="text-center bg-cream-100 py-1.5 px-3 rounded-lg border border-cream-200">
           <span className="text-xs text-ink-700 font-medium">
-            🎯 Your goal: <strong className="text-ink-900">{turn.goal}</strong>
+            {UI_TEXT.yourGoal[learnerLevel]}{' '}
+            <strong className="text-ink-900">
+              {learnerLevel === 'beginner' ? turn.goal : (turn.goalEs || turn.goal)}
+            </strong>
           </span>
         </div>
 
@@ -140,7 +145,11 @@ export const TinyTalesGame: React.FC<Props> = ({ prompt, onAnswer, disabled }) =
             onClick={handleContinue}
             className="w-full h-14 rounded-2xl bg-teal-500 hover:bg-teal-600 text-white font-bold text-lg shadow-md active:scale-98 transition-all flex items-center justify-center gap-2"
           >
-            <span>{isLastTurn ? 'Finish Scene' : 'Next Turn'}</span>
+            <span>
+              {isLastTurn
+                ? (learnerLevel === 'beginner' ? 'Finish Scene' : 'Finalizar escena')
+                : (learnerLevel === 'beginner' ? 'Next Turn' : 'Siguiente turno')}
+            </span>
             <ArrowRight className="w-5 h-5" />
           </button>
         )}

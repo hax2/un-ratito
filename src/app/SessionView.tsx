@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SessionState } from '../content/types';
+import { SessionState, LearnerLevel } from '../content/types';
 import { sessionController, EvaluationResult } from '../learning/sessionController';
 import { PromptRenderer } from '../components/PromptRenderer';
 import { FeedbackBanner } from '../components/FeedbackBanner';
@@ -8,11 +8,17 @@ import { audioService } from '../audio/audioService';
 
 interface Props {
   sessionState: SessionState;
+  learnerLevel?: LearnerLevel;
   onFinishSession: (session: SessionState) => void;
   onExitSession: () => void;
 }
 
-export const SessionView: React.FC<Props> = ({ sessionState, onFinishSession, onExitSession }) => {
+export const SessionView: React.FC<Props> = ({
+  sessionState,
+  learnerLevel = 'beginner',
+  onFinishSession,
+  onExitSession,
+}) => {
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
   const [isAdvancing, setIsAdvancing] = useState(false);
 
@@ -100,6 +106,7 @@ export const SessionView: React.FC<Props> = ({ sessionState, onFinishSession, on
         <PromptRenderer
           key={currentPrompt.id}
           prompt={currentPrompt}
+          learnerLevel={learnerLevel}
           onAnswer={handleAnswer}
           disabled={!!evaluation}
         />
@@ -111,6 +118,7 @@ export const SessionView: React.FC<Props> = ({ sessionState, onFinishSession, on
           outcome={evaluation.outcome}
           explanation={evaluation.feedback}
           target={evaluation.target}
+          learnerLevel={learnerLevel}
           onNext={handleNext}
           isLastPrompt={isLast}
         />

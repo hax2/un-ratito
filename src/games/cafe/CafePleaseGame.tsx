@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { CafePrompt, CafeSlot } from '../../content/types';
+import { CafePrompt, CafeSlot, LearnerLevel } from '../../content/types';
 import { audioService } from '../../audio/audioService';
 import { Coffee, Volume2, Check, AlertCircle } from 'lucide-react';
+import { shouldShowEnglish, UI_TEXT } from '../../utils/language';
 
 interface Props {
   prompt: CafePrompt;
+  learnerLevel?: LearnerLevel;
   onAnswer: (outcome: 'correct' | 'incorrect' | 'assisted' | 'valid-off-target', payload: any) => void;
   disabled?: boolean;
 }
 
-export const CafePleaseGame: React.FC<Props> = ({ prompt, onAnswer, disabled }) => {
+export const CafePleaseGame: React.FC<Props> = ({ prompt, learnerLevel = 'beginner', onAnswer, disabled }) => {
   const [selectedDrink, setSelectedDrink] = useState<'café' | 'cortado' | 'agua' | 'té'>('café');
   const [selectedMilk, setSelectedMilk] = useState<'solo' | 'con leche' | 'cortado' | 'con hielo'>('con leche');
   const [quantity, setQuantity] = useState<number>(1);
@@ -50,7 +52,7 @@ export const CafePleaseGame: React.FC<Props> = ({ prompt, onAnswer, disabled }) 
       <div className="text-center mb-3">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-terracotta-100 text-terracotta-600 text-xs font-semibold uppercase mb-1">
           <Coffee className="w-3.5 h-3.5" />
-          Café, Please • Customer: {prompt.customerName}
+          {learnerLevel === 'advanced' ? 'Café, por favor' : 'Café, Please'} • {learnerLevel === 'advanced' ? 'Cliente' : 'Customer'}: {prompt.customerName}
         </div>
 
         {/* Customer Bubble */}
@@ -59,7 +61,9 @@ export const CafePleaseGame: React.FC<Props> = ({ prompt, onAnswer, disabled }) 
             <p className="text-lg md:text-xl font-medium text-ink-900">
               «{prompt.orderSpokenSpanish}»
             </p>
-            <p className="text-xs text-ink-400 mt-0.5">{prompt.orderEnglish}</p>
+            {shouldShowEnglish(learnerLevel) && (
+              <p className="text-xs text-ink-400 mt-0.5">{prompt.orderEnglish}</p>
+            )}
           </div>
           <button
             type="button"
@@ -84,7 +88,7 @@ export const CafePleaseGame: React.FC<Props> = ({ prompt, onAnswer, disabled }) 
         {/* Drink selection */}
         <div>
           <label className="text-xs font-bold text-ink-500 uppercase tracking-wider block mb-1.5">
-            1. Select Drink
+            {learnerLevel === 'beginner' ? '1. Select Drink' : '1. Elige bebida'}
           </label>
           <div className="grid grid-cols-4 gap-2">
             {(['café', 'cortado', 'té', 'agua'] as const).map(drink => (
@@ -112,7 +116,7 @@ export const CafePleaseGame: React.FC<Props> = ({ prompt, onAnswer, disabled }) 
         {selectedDrink !== 'agua' && selectedDrink !== 'té' && (
           <div>
             <label className="text-xs font-bold text-ink-500 uppercase tracking-wider block mb-1.5">
-              2. Milk / Style
+              {learnerLevel === 'beginner' ? '2. Milk / Style' : '2. Leche o estilo'}
             </label>
             <div className="grid grid-cols-3 gap-2">
               {(['solo', 'con leche', 'con hielo'] as const).map(milk => (
@@ -139,7 +143,7 @@ export const CafePleaseGame: React.FC<Props> = ({ prompt, onAnswer, disabled }) 
         {/* Quantity */}
         <div>
           <label className="text-xs font-bold text-ink-500 uppercase tracking-wider block mb-1.5">
-            3. Quantity
+            {learnerLevel === 'beginner' ? '3. Quantity' : '3. Cantidad'}
           </label>
           <div className="flex items-center justify-center gap-4">
             {[1, 2, 3].map(qty => (
@@ -172,7 +176,7 @@ export const CafePleaseGame: React.FC<Props> = ({ prompt, onAnswer, disabled }) 
           className="w-full h-14 rounded-2xl bg-terracotta-500 hover:bg-terracotta-600 text-white font-bold text-lg shadow-md active:scale-98 transition-all flex items-center justify-center gap-2"
         >
           <Check className="w-5 h-5" />
-          Serve Order
+          {UI_TEXT.serveOrder[learnerLevel]}
         </button>
       </div>
     </div>

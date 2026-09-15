@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { calculateNextStageProgress, STAGE_INTERVALS_MS } from '../src/learning/scheduler';
 import { AttemptRecord, TargetProgress } from '../src/content/types';
-import { exportLearnerData, importLearnerData, clearAllLearnerData, getAllProgress } from '../src/storage/db';
+import { exportLearnerData, importLearnerData, clearAllLearnerData, getAllProgress, saveSettings, getSettings } from '../src/storage/db';
+import { shouldShowEnglish } from '../src/utils/language';
+import { sessionController } from '../src/learning/sessionController';
 
 describe('Spaced Repetition Scheduler', () => {
   const baseAttempt: AttemptRecord = {
@@ -198,5 +200,33 @@ describe('Game Evaluators', () => {
     const userChosenCorrection = 'cocinando';
 
     expect(userSelectedToken === errorTokenIndex && userChosenCorrection === correctCorrection).toBe(true);
+  });
+});
+
+describe('Level Selection & Progressive Immersion', () => {
+  it('shouldShowEnglish returns true only for beginner', () => {
+    expect(shouldShowEnglish('beginner')).toBe(true);
+    expect(shouldShowEnglish('intermediate')).toBe(false);
+    expect(shouldShowEnglish('advanced')).toBe(false);
+  });
+
+  it('sessionController automatically chooses level-adequate chapters', async () => {
+    // Beginner -> Chapter A
+    const beginnerSession = await sessionController.startSession('auto', 'mixed', 'standard', 3, 'beginner');
+    expect(beginnerSession.chapterId).toBe('chapter-a');
+
+    // Intermediate -> Chapter B
+    const interSession = await sessionController.startSession('auto', 'mixed', 'standard', 3, 'intermediate');
+    expect(interSession.chapterId).toBe('chapter-b');
+
+    // Advanced -> Chapter C
+    const advSession = await sessionController.startSession('auto', 'mixed', 'standard', 3, 'advanced');
+    expect(advSession.chapterId).toBe('chapter-c');
+  });
+
+  it('saves and restores learner level in settings', async () => {
+    await saveSettings({ learnerLevel: 'advanced' });
+    const settings = await getSettings();
+    expect(settings.learnerLevel).toBe('advanced');
   });
 });

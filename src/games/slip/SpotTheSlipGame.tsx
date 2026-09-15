@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { SlipPrompt } from '../../content/types';
+import { SlipPrompt, LearnerLevel } from '../../content/types';
 import { audioService } from '../../audio/audioService';
 import { AlertTriangle, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { UI_TEXT } from '../../utils/language';
 
 interface Props {
   prompt: SlipPrompt;
+  learnerLevel?: LearnerLevel;
   onAnswer: (outcome: 'correct' | 'incorrect' | 'assisted' | 'valid-off-target', payload: any) => void;
   disabled?: boolean;
 }
 
-export const SpotTheSlipGame: React.FC<Props> = ({ prompt, onAnswer, disabled }) => {
+export const SpotTheSlipGame: React.FC<Props> = ({ prompt, learnerLevel = 'beginner', onAnswer, disabled }) => {
   const [selectedTokenIndex, setSelectedTokenIndex] = useState<number | null>(null);
   const [chosenCorrection, setChosenCorrection] = useState<string | null>(null);
 
@@ -68,10 +70,12 @@ export const SpotTheSlipGame: React.FC<Props> = ({ prompt, onAnswer, disabled })
       <div className="text-center mb-3">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-terracotta-100 text-terracotta-700 text-xs font-semibold uppercase mb-1">
           <AlertTriangle className="w-3.5 h-3.5" />
-          Spot the Slip
+          {learnerLevel === 'advanced' ? 'Caza el error' : 'Spot the Slip'}
         </div>
         <h2 className="text-lg md:text-xl font-serif text-ink-900 font-bold">
-          Tap the word with an error, or confirm it's correct
+          {learnerLevel === 'beginner'
+            ? "Tap the word with an error, or confirm it's correct"
+            : (prompt.instructionEs || 'Toca la palabra con el error o confirma que es correcta')}
         </h2>
       </div>
 
@@ -109,7 +113,9 @@ export const SpotTheSlipGame: React.FC<Props> = ({ prompt, onAnswer, disabled })
         {selectedTokenIndex !== null && prompt.hasError && !chosenCorrection && (
           <div className="bg-cream-100 p-4 rounded-2xl border border-cream-200 animate-fade-in">
             <p className="text-xs font-bold text-ink-600 uppercase mb-2 text-center">
-              How would you fix «{prompt.tokens[selectedTokenIndex]}»?
+              {learnerLevel === 'beginner'
+                ? `How would you fix «${prompt.tokens[selectedTokenIndex]}»?`
+                : `¿Cómo corregirías «${prompt.tokens[selectedTokenIndex]}»?`}
             </p>
             <div className="grid grid-cols-3 gap-2">
               {prompt.correctionChoices.map((choice, i) => (
@@ -135,7 +141,7 @@ export const SpotTheSlipGame: React.FC<Props> = ({ prompt, onAnswer, disabled })
             className="w-full min-h-[50px] rounded-2xl bg-cream-200 hover:bg-cream-300 text-ink-800 font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2"
           >
             <ShieldCheck className="w-4 h-4 text-teal-600" />
-            This sentence has no mistake
+            {UI_TEXT.sentenceHasNoMistake[learnerLevel]}
           </button>
         )}
 

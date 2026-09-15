@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { MarketItem, MarketPrompt } from '../../content/types';
+import { MarketItem, MarketPrompt, LearnerLevel } from '../../content/types';
 import { audioService } from '../../audio/audioService';
 import { ShoppingBag, CheckCircle2, XCircle } from 'lucide-react';
+import { shouldShowEnglish } from '../../utils/language';
 
 interface Props {
   prompt: MarketPrompt;
+  learnerLevel?: LearnerLevel;
   onAnswer: (outcome: 'correct' | 'incorrect' | 'assisted' | 'valid-off-target', payload: any) => void;
   disabled?: boolean;
 }
@@ -29,7 +31,7 @@ const renderItemIcon = (iconName: string) => {
   }
 };
 
-export const PocketMarketGame: React.FC<Props> = ({ prompt, onAnswer, disabled }) => {
+export const PocketMarketGame: React.FC<Props> = ({ prompt, learnerLevel = 'beginner', onAnswer, disabled }) => {
   const [selectedItem, setSelectedItem] = useState<MarketItem | null>(null);
 
   const handleSelectItem = (item: MarketItem) => {
@@ -58,11 +60,14 @@ export const PocketMarketGame: React.FC<Props> = ({ prompt, onAnswer, disabled }
       <div className="text-center mb-3">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-mustard-100 text-mustard-600 text-xs font-semibold uppercase mb-1">
           <ShoppingBag className="w-3.5 h-3.5" />
-          Pocket Market
+          {learnerLevel === 'advanced' ? 'Mercado de bolsillo' : 'Pocket Market'}
         </div>
         <h2 className="text-xl md:text-2xl font-serif text-ink-900 font-bold">
-          {prompt.instruction}
+          {learnerLevel === 'beginner' ? prompt.instruction : (prompt.instructionEs || prompt.instruction)}
         </h2>
+        {learnerLevel === 'intermediate' && prompt.instructionEs && (
+          <p className="text-xs text-ink-400 mt-0.5 italic">({prompt.instruction})</p>
+        )}
       </div>
 
       {/* Shopping Bag Illustration Area */}
@@ -133,9 +138,11 @@ export const PocketMarketGame: React.FC<Props> = ({ prompt, onAnswer, disabled }
               <span className="font-bold text-sm text-ink-900 leading-tight">
                 {item.spanish}
               </span>
-              <span className="text-xs text-ink-400">
-                {item.english}
-              </span>
+              {shouldShowEnglish(learnerLevel) && (
+                <span className="text-xs text-ink-400">
+                  {item.english}
+                </span>
+              )}
             </button>
           );
         })}

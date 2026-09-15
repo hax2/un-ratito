@@ -14,6 +14,8 @@ export type GameId =
 
 export type SupportLevel = 'supported' | 'standard' | 'stretch';
 
+export type LearnerLevel = 'beginner' | 'intermediate' | 'advanced';
+
 export interface Target {
   id: string;
   revision: number;
@@ -26,6 +28,7 @@ export interface Target {
   prerequisiteIds: string[];
   tags: string[];
   explanation?: string;
+  explanationEs?: string;
 }
 
 export interface Chapter {
@@ -35,7 +38,9 @@ export interface Chapter {
   band: 'Beginner' | 'Intermediate' | 'Advanced';
   grammarAliases: string[];
   goal: string;
+  goalEs?: string;
   explanation: string;
+  explanationEs?: string;
   examples: { spanish: string; english: string }[];
   targetIds: string[];
   supportedGames: GameId[];
@@ -50,6 +55,7 @@ export interface BasePrompt {
   evidence: EvidenceType;
   supportLevel: SupportLevel;
   explanation: string;
+  explanationEs?: string;
 }
 
 // 1. Phrase Builder Prompt
@@ -61,6 +67,7 @@ export interface BuilderTile {
 export interface BuilderPrompt extends BasePrompt {
   game: 'builder';
   intent: string;
+  intentEs?: string;
   tiles: BuilderTile[];
   acceptedSequences: string[][]; // tile ID sequences
   validOffTargetSequences?: { sequence: string[]; feedback: string }[];
@@ -82,6 +89,7 @@ export interface TaleTurn {
   text: string;
   speakerRole: 'partner' | 'server' | 'friend';
   goal: string;
+  goalEs?: string;
   choices: TaleChoice[];
 }
 
@@ -104,6 +112,7 @@ export interface MarketItem {
 export interface MarketPrompt extends BasePrompt {
   game: 'market';
   instruction: string; // e.g., "Add the apple to the bag" or "Añade la manzana"
+  instructionEs?: string;
   correctItemId: string;
   choices: MarketItem[];
 }
@@ -133,6 +142,7 @@ export interface SlipPrompt extends BasePrompt {
   correctionChoices: string[]; // options to replace the wrong token, or ["Correct as is"]
   correctCorrection: string;
   correctedSentence: string;
+  instructionEs?: string;
 }
 
 // 6. What Did They Mean? Prompt
@@ -141,6 +151,7 @@ export interface ListeningPrompt extends BasePrompt {
   clipSpanish: string;
   transcript: string;
   question: string;
+  questionEs?: string;
   choices: {
     id: string;
     text: string;

@@ -9,6 +9,7 @@ export interface AppSettings {
   selectedChapterId: string;
   supportLevel: 'supported' | 'standard' | 'stretch';
   speechRate: number; // 0.8 to 1.1
+  learnerLevel: 'beginner' | 'intermediate' | 'advanced';
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -16,6 +17,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   selectedChapterId: 'chapter-a',
   supportLevel: 'standard',
   speechRate: 0.9,
+  learnerLevel: 'beginner',
 };
 
 let dbPromise: Promise<IDBPDatabase> | null = null;
